@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>DNS Client</title>
+    <meta charset="utf-8" />
+
+    <meta name="keywords" content="Technitium, DNS Client, DNS Lookup, DNS Checker, Online DNS, root servers" />
+    <meta name="description" content="Technitium DNS Client is a online DNS client service to quickly query any DNS server on the Internet and allows to check name resolution via root servers." />
+
+    <script src="/js/jquery.min.js"></script>
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap-theme.min.css" rel="stylesheet">
+    <script src="/js/bootstrap.min.js"></script>
+
+    <link href="/css/main.css" rel="stylesheet" />
+    <script src="/js/main.js"></script>
+
+    <script src="/js/dnsclient.js"></script>
+</head>
+<body>
+    <div id="header"></div>
+
+    <div id="content">
+        <div class="container" style="max-width: 990px;">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">DNS Client</h3>
+                </div>
+                <div class="panel-body">
+                    <form class="form-inline" style="margin-bottom: 20px;">
+                        <div class="form-group" style="margin-right: 10px;">
+                            <label for="txtServer">Server</label>
+                            <div class="input-group dropdown">
+                                <input type="text" class="form-control dropdown-toggle dnsserver" style="width: 220px;" id="txtServer" value="Google (8.8.8.8)">
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Google (8.8.8.8)</a></li>
+                                    <li><a href="#">Google (8.8.4.4)</a></li>
+                                    <li><a href="#">OpenDNS (208.67.222.222)</a></li>
+                                    <li><a href="#">OpenDNS (208.67.220.220)</a></li>
+                                    <li><a href="#">Level3 (4.2.2.1)</a></li>
+                                    <li><a href="#">Level3 (4.2.2.2)</a></li>
+                                    <li><a href="#">Ultra (156.154.70.1)</a></li>
+                                    <li><a href="#">Ultra (156.154.71.1)</a></li>
+                                    <li><a href="#">Dyn (216.146.35.35)</a></li>
+                                    <li><a href="#">Dyn (216.146.36.36)</a></li>
+                                    <li><a href="#">Root Servers (root-servers)</a></li>
+                                </ul>
+                                <span role="button" class="input-group-addon dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-right: 10px;">
+                            <label for="txtDomain">Domain</label>
+                            <input type="text" class="form-control" style="width: 250px;" id="txtDomain" placeholder="example.com">
+                        </div>
+
+                        <div class="form-group" style="margin-right: 10px;">
+                            <label for="optType">Type</label>
+                            <select class="form-control" id="optType">
+                                <option>A</option>
+                                <option>NS</option>
+                                <option>CNAME</option>
+                                <option>SOA</option>
+                                <option>PTR</option>
+                                <option>MX</option>
+                                <option>TXT</option>
+                                <option>AAAA</option>
+                                <option>ANY</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="btnResolve" data-loading-text="Resolving..." onclick="return false;">Resolve</button>
+                    </form>
+
+                    <div class="AlertPlaceholder"></div>
+
+                    <div id="divOutput"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+</body>
+</html>
