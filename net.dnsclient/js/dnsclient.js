@@ -12,10 +12,12 @@
         var domain = $("#txtDomain").val();
         var type = $("#optType").val();
 
-        var i = server.indexOf("(");
-        if (i > -1) {
-            var j = server.indexOf(")");
-            server = server.substring(i + 1, j);
+        {
+            var i = server.indexOf("(");
+            if (i > -1) {
+                var j = server.indexOf(")");
+                server = server.substring(i + 1, j);
+            }
         }
 
         if ((server === null) || (server === "")) {
@@ -28,6 +30,22 @@
             showAlert("warning", "Missing!", "Please enter a domain name to query.");
             btn.button('reset');
             return;
+        }
+        else {
+            var i = domain.indexOf("://");
+            if (i > -1) {
+                var j = domain.indexOf(":", i + 3);
+
+                if (j < 0)
+                    j = domain.indexOf("/", i + 3);
+
+                if (j > -1)
+                    domain = domain.substring(i + 3, j);
+                else
+                    domain = domain.substring(i + 3);
+
+                $("#txtDomain").val(domain);
+            }
         }
 
         var apiUrl = "/api/dnsclient/?server=" + server + "&domain=" + domain + "&type=" + type;
