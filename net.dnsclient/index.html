@@ -28,11 +28,11 @@
                     <h3 class="panel-title">DNS Client</h3>
                 </div>
                 <div class="panel-body">
-                    <form class="form-inline" style="margin-bottom: 20px;">
-                        <div class="form-group" style="margin-right: 10px;">
-                            <label for="txtServer">Server</label>
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label for="txtServer">Name Server</label>
                             <div class="input-group dropdown">
-                                <input type="text" class="form-control dropdown-toggle dnsserver" style="width: 220px;" id="txtServer" value="Google (8.8.8.8)">
+                                <input type="text" class="form-control dropdown-toggle dnsserver" id="txtServer" value="Google (8.8.8.8)">
                                 <ul class="dropdown-menu">
                                     <li><a href="#">Google (8.8.8.8)</a></li>
                                     <li><a href="#">Google (8.8.4.4)</a></li>
@@ -50,12 +50,12 @@
                             </div>
                         </div>
 
-                        <div class="form-group" style="margin-right: 10px;">
+                        <div class="form-group">
                             <label for="txtDomain">Domain</label>
-                            <input type="text" class="form-control" style="width: 250px;" id="txtDomain" placeholder="example.com">
+                            <input type="text" class="form-control" style="width: 240px;" id="txtDomain" placeholder="example.com">
                         </div>
 
-                        <div class="form-group" style="margin-right: 10px;">
+                        <div class="form-group">
                             <label for="optType">Type</label>
                             <select class="form-control" id="optType">
                                 <option>A</option>
@@ -70,7 +70,9 @@
                             </select>
                         </div>
 
-                        <button type="submit" class="btn btn-primary" id="btnResolve" data-loading-text="Resolving..." onclick="return false;">Resolve</button>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" id="btnResolve" data-loading-text="Resolving..." onclick="return false;">Resolve</button>
+                        </div>
                     </form>
 
                     <div class="AlertPlaceholder"></div>

@@ -119,3 +119,8 @@ a {
         width: 1170px;
     }
 }
+
+.form-inline .form-group {
+    margin-right: 10px;
+    margin-bottom: 15px;
+}
