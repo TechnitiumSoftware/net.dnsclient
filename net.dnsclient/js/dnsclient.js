@@ -43,17 +43,28 @@
             url: apiUrl,
             dataType: 'json',
             cache: false,
-            success: function (responseJson, status, jqXHR) {
-                divOutput.html("<pre>" + JSON.stringify(responseJson, null, 2) + "</pre>");
+            success: function (responseJSON, status, jqXHR) {
+
+                switch (responseJSON.status) {
+                    case "ok":
+                        divOutput.html("<pre>" + JSON.stringify(responseJSON.response, null, 2) + "</pre>");
+                        break;
+
+                    case "error":
+                        showAlert("danger", "Error!", responseJSON.response.Message);
+                        divOutput.hide();
+                        break;
+
+                    default:
+                        showAlert("danger", "Error!", "Invalid status code was received.");
+                        divOutput.hide();
+                        break;
+                }
+
                 btn.button('reset');
             },
             error: function (jqXHR, textStatus, errorThrown) {
-
-                if (jqXHR.responseJSON == null)
-                    showAlert("danger", "Error!", jqXHR.status + " " + jqXHR.statusText);
-                else
-                    showAlert("danger", "Error!", jqXHR.responseJSON.Message);
-
+                showAlert("danger", "Error!", jqXHR.status + " " + jqXHR.statusText);
                 divOutput.hide();
                 btn.button('reset');
             }

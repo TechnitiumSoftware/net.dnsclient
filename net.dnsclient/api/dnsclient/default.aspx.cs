@@ -33,15 +33,14 @@ namespace net.dnsclient.api.dnsclient
                 string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
 
                 Response.AddHeader("Content-Type", "application/json; charset=utf-8");
-                Response.Write(jsonResponse);
+                Response.Write("{\"status\":\"ok\", \"response\":" + jsonResponse + "}");
             }
             catch (Exception ex)
             {
                 string jsonResponse = JsonConvert.SerializeObject(ex);
 
-                Response.StatusCode = 500;
                 Response.AddHeader("Content-Type", "application/json; charset=utf-8");
-                Response.Write(jsonResponse);
+                Response.Write("{\"status\":\"error\", \"response\":" + jsonResponse + "}");
             }
         }
     }
