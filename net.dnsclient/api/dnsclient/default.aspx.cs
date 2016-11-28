@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
+using System.Net;
 using System.Web.UI;
 using TechnitiumLibrary.Net;
 
@@ -24,7 +25,17 @@ namespace net.dnsclient.api.dnsclient
                 }
                 else
                 {
-                    using (DnsClient client = new DnsClient(server))
+                    IPAddress serverIP;
+
+                    if (!IPAddress.TryParse(server, out serverIP))
+                    {
+                        using (DnsClient client = new DnsClient(IPAddress.Parse("8.8.8.8")))
+                        {
+                            serverIP = client.ResolveIP(server);
+                        }
+                    }
+
+                    using (DnsClient client = new DnsClient(serverIP))
                     {
                         dnsResponse = client.Resolve(domain, type);
                     }
