@@ -26,19 +26,19 @@ namespace net.dnsclient.api.dnsclient
                 else
                 {
                     IPAddress serverIP;
+                    NameServerAddress nameServer;
 
-                    if (!IPAddress.TryParse(server, out serverIP))
+                    if (IPAddress.TryParse(server, out serverIP))
                     {
-                        using (DnsClient client = new DnsClient(IPAddress.Parse("8.8.8.8")))
-                        {
-                            serverIP = client.ResolveIP(server);
-                        }
+                        nameServer = new NameServerAddress(serverIP);
+                    }
+                    else
+                    {
+                        serverIP = (new DnsClient(new IPAddress[] { IPAddress.Parse("8.8.8.8"), IPAddress.Parse("8.8.4.4") })).ResolveIP(server);
+                        nameServer = new NameServerAddress(server, serverIP);
                     }
 
-                    using (DnsClient client = new DnsClient(serverIP))
-                    {
-                        dnsResponse = client.Resolve(domain, type);
-                    }
+                    dnsResponse = (new DnsClient(nameServer)).Resolve(domain, type);
                 }
 
                 string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
