@@ -21,7 +21,7 @@ namespace net.dnsclient.api.dnsclient
 
                 if (server == "root-servers")
                 {
-                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type);
+                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type, false, true);
                 }
                 else
                 {
@@ -34,11 +34,11 @@ namespace net.dnsclient.api.dnsclient
                     }
                     else
                     {
-                        serverIP = (new DnsClient(new IPAddress[] { IPAddress.Parse("8.8.8.8"), IPAddress.Parse("8.8.4.4") })).ResolveIP(server);
+                        serverIP = (new DnsClient(new IPAddress[] { IPAddress.Parse("8.8.8.8"), IPAddress.Parse("8.8.4.4") }, true)).ResolveIP(server);
                         nameServer = new NameServerAddress(server, serverIP);
                     }
 
-                    dnsResponse = (new DnsClient(nameServer)).Resolve(domain, type);
+                    dnsResponse = (new DnsClient(nameServer, true)).Resolve(domain, type);
                 }
 
                 string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
