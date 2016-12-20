@@ -48,6 +48,8 @@
             }
         }
 
+        window.location.hash = encodeURI($("#txtServer").val()) + "/" + domain + "/" + type;
+
         var apiUrl = "/api/dnsclient/?server=" + server + "&domain=" + domain + "&type=" + type;
         var divOutput = $("#divOutput");
 
@@ -90,6 +92,19 @@
 
     });
 
+    //read hash values at doc ready
+    {
+        if (window.location.hash.length > 0) {
+            var values = window.location.hash.substr(1).split("/");
+            if (values.length === 3) {
+                $("#txtServer").val(decodeURI(values[0]));
+                $("#txtDomain").val(values[1]);
+                $("#optType").val(values[2]);
+
+                $("#btnResolve").click();
+            }
+        }
+    }
 });
 
 function showAlert(type, title, message) {
@@ -103,7 +118,7 @@ function showAlert(type, title, message) {
     divAlert.html(alertHTML);
     divAlert.show();
 
-    if (type == "success") {
+    if (type === "success") {
         setTimeout(function () {
             hideAlert();
         }, 5000);
