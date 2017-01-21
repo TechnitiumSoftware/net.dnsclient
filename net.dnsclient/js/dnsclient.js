@@ -90,6 +90,17 @@
             }
         });
 
+        //add server name to list if doesnt exists
+        var txtServerName = $("#txtServer").val();
+        var containsServer = false;
+
+        $("ul.dropdown-menu a").each(function () {
+            if ($(this).html() === txtServerName)
+                containsServer = true;
+        });
+
+        if (!containsServer)
+            $("ul.dropdown-menu").prepend('<li><a href="#">' + txtServerName + '</a></li>');
     });
 
     //read hash values at doc ready
