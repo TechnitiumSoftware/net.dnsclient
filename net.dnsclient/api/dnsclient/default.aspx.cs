@@ -9,19 +9,23 @@ namespace net.dnsclient.api.dnsclient
 {
     public partial class _default : Page
     {
+        const bool IPv6 = false;
+        const bool TCP = true;
+        const int RETRIES = 2;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             try
             {
                 string server = Request.QueryString["server"];
                 string domain = Request.QueryString["domain"];
-                DnsRecordType type = (DnsRecordType)Enum.Parse(typeof(DnsRecordType), Request.QueryString["type"]);
+                DnsResourceRecordType type = (DnsResourceRecordType)Enum.Parse(typeof(DnsResourceRecordType), Request.QueryString["type"]);
 
                 DnsDatagram dnsResponse;
 
                 if (server == "root-servers")
                 {
-                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type, false, true);
+                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type, IPv6, TCP, RETRIES);
                 }
                 else
                 {
@@ -34,11 +38,11 @@ namespace net.dnsclient.api.dnsclient
                     }
                     else
                     {
-                        serverIP = (new DnsClient(new IPAddress[] { IPAddress.Parse("8.8.8.8"), IPAddress.Parse("8.8.4.4") }, true)).ResolveIP(server);
+                        serverIP = (new DnsClient(new IPAddress[] { IPAddress.Parse("8.8.8.8"), IPAddress.Parse("8.8.4.4") }, IPv6, TCP, RETRIES)).ResolveIP(server);
                         nameServer = new NameServerAddress(server, serverIP);
                     }
 
-                    dnsResponse = (new DnsClient(nameServer, true)).Resolve(domain, type);
+                    dnsResponse = (new DnsClient(nameServer, IPv6, TCP, RETRIES)).Resolve(domain, type);
                 }
 
                 string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
