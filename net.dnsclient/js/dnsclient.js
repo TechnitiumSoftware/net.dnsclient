@@ -1,6 +1,6 @@
 ﻿$(function () {
 
-    $('.dropdown-menu a').click(function () {
+    $('.dropdown-menu').on('click', 'a', function () {
         $(this).closest('.dropdown').find('input.dnsserver').val($(this).text());
     });
 
