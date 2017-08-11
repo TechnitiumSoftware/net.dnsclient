@@ -29,20 +29,23 @@ namespace net.dnsclient.api.dnsclient
                 }
                 else
                 {
-                    IPAddress serverIP;
-                    NameServerAddress nameServer;
+                    NameServerAddress[] nameServers;
 
-                    if (IPAddress.TryParse(server, out serverIP))
+                    if (IPAddress.TryParse(server, out IPAddress serverIP))
                     {
-                        nameServer = new NameServerAddress(serverIP);
+                        nameServers = new NameServerAddress[] { new NameServerAddress(serverIP) };
                     }
                     else
                     {
-                        serverIP = (new DnsClient(new IPAddress[] { IPAddress.Parse("8.8.8.8"), IPAddress.Parse("8.8.4.4") }, IPv6, TCP, RETRIES)).ResolveIP(server);
-                        nameServer = new NameServerAddress(server, serverIP);
+                        IPAddress[] serverIPs = (new DnsClient(IPv6, TCP, RETRIES)).ResolveIP(server, IPv6);
+
+                        nameServers = new NameServerAddress[serverIPs.Length];
+
+                        for (int i = 0; i < serverIPs.Length; i++)
+                            nameServers[i] = new NameServerAddress(server, serverIPs[i]);
                     }
 
-                    dnsResponse = (new DnsClient(nameServer, IPv6, TCP, RETRIES)).Resolve(domain, type);
+                    dnsResponse = (new DnsClient(nameServers, IPv6, TCP, RETRIES)).Resolve(domain, type);
                 }
 
                 string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
