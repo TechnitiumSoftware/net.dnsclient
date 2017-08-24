@@ -9,7 +9,7 @@ namespace net.dnsclient.api.dnsclient
 {
     public partial class _default : Page
     {
-        const bool IPv6 = false;
+        const bool PREFER_IPv6 = false;
         const bool TCP = true;
         const int RETRIES = 2;
 
@@ -25,7 +25,7 @@ namespace net.dnsclient.api.dnsclient
 
                 if (server == "root-servers")
                 {
-                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type, IPv6, TCP, RETRIES);
+                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type, null, PREFER_IPv6, TCP, RETRIES);
                 }
                 else
                 {
@@ -37,7 +37,7 @@ namespace net.dnsclient.api.dnsclient
                     }
                     else
                     {
-                        IPAddress[] serverIPs = (new DnsClient(IPv6, TCP, RETRIES)).ResolveIP(server, IPv6);
+                        IPAddress[] serverIPs = (new DnsClient() { PreferIPv6 = PREFER_IPv6, Tcp = TCP, Retries = RETRIES }).ResolveIP(server, PREFER_IPv6);
 
                         nameServers = new NameServerAddress[serverIPs.Length];
 
@@ -45,7 +45,7 @@ namespace net.dnsclient.api.dnsclient
                             nameServers[i] = new NameServerAddress(server, serverIPs[i]);
                     }
 
-                    dnsResponse = (new DnsClient(nameServers, IPv6, TCP, RETRIES)).Resolve(domain, type);
+                    dnsResponse = (new DnsClient(nameServers) { PreferIPv6 = PREFER_IPv6, Tcp = TCP, Retries = RETRIES }).Resolve(domain, type);
                 }
 
                 string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
