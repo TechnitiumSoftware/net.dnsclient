@@ -52,7 +52,16 @@ namespace net.dnsclient.api.dnsclient
 
                     if (IPAddress.TryParse(server, out IPAddress serverIP))
                     {
-                        nameServers = new NameServerAddress[] { new NameServerAddress(serverIP) };
+                        string serverDomain = null;
+
+                        try
+                        {
+                            serverDomain = (new DnsClient() { PreferIPv6 = PREFER_IPv6, Tcp = TCP, Retries = RETRIES }).ResolvePTR(serverIP);
+                        }
+                        catch
+                        { }
+
+                        nameServers = new NameServerAddress[] { new NameServerAddress(serverDomain, serverIP) };
                     }
                     else
                     {
