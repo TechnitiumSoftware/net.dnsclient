@@ -22,7 +22,7 @@ using Newtonsoft.Json.Converters;
 using System;
 using System.Net;
 using System.Web.UI;
-using TechnitiumLibrary.Net;
+using TechnitiumLibrary.Net.Dns;
 
 namespace net.dnsclient.api.dnsclient
 {
