@@ -44,7 +44,7 @@ namespace net.dnsclient.api.dnsclient
 
                 if (server == "root-servers")
                 {
-                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type, null, PREFER_IPv6, TCP, RETRIES);
+                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type, null, null, PREFER_IPv6, TCP, RETRIES);
                 }
                 else
                 {
