@@ -31,6 +31,7 @@ namespace net.dnsclient.api.dnsclient
         const bool PREFER_IPv6 = false;
         const bool TCP = true;
         const int RETRIES = 2;
+        const int MAX_STACK_COUNT = 10;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -44,7 +45,7 @@ namespace net.dnsclient.api.dnsclient
 
                 if (server == "root-servers")
                 {
-                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type, null, null, PREFER_IPv6, TCP, RETRIES);
+                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type, new SimpleDnsCache(), null, PREFER_IPv6, TCP, RETRIES, MAX_STACK_COUNT);
                 }
                 else
                 {
