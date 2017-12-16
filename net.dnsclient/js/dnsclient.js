@@ -1,7 +1,8 @@
 ﻿$(function () {
 
-    $('.dropdown-menu').on('click', 'a', function () {
-        $(this).closest('.dropdown').find('input.dnsserver').val($(this).text());
+    $('.dropdown-menu').on('click', 'a', function (e) {
+        e.preventDefault();
+        $(this).closest('.dropdown').find('input').val($(this).text());
     });
 
     $("#btnResolve").click(function () {
