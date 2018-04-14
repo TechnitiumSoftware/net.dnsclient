@@ -1,2 +1,2 @@
 # net.dnsclient
-DNS Client Web App hosted on http://dnsclient.net/
+DNS Client Web App hosted on https://dnsclient.net/
