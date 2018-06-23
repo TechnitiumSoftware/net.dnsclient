@@ -1,6 +1,6 @@
 ﻿/*
 Technitium DNS Client
-Copyright (C) 2017  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2018  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -29,9 +29,14 @@ namespace net.dnsclient.api.dnsclient
     public partial class _default : Page
     {
         const bool PREFER_IPv6 = false;
-        const bool TCP = true;
+        const DnsClientProtocol PROTOCOL = DnsClientProtocol.Tcp;
         const int RETRIES = 2;
         const int MAX_STACK_COUNT = 10;
+
+        static _default()
+        {
+            DnsClient.RecursiveResolveDefaultProtocol = DnsClientProtocol.Tcp;
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -45,7 +50,7 @@ namespace net.dnsclient.api.dnsclient
 
                 if (server == "root-servers")
                 {
-                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type, new SimpleDnsCache(), null, PREFER_IPv6, TCP, RETRIES, MAX_STACK_COUNT);
+                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type, new SimpleDnsCache(), null, PREFER_IPv6, PROTOCOL, RETRIES, MAX_STACK_COUNT);
                 }
                 else
                 {
@@ -57,7 +62,7 @@ namespace net.dnsclient.api.dnsclient
 
                         try
                         {
-                            serverDomain = (new DnsClient() { PreferIPv6 = PREFER_IPv6, Tcp = TCP, Retries = RETRIES }).ResolvePTR(serverIP);
+                            serverDomain = (new DnsClient() { PreferIPv6 = PREFER_IPv6, Protocol = PROTOCOL, Retries = RETRIES }).ResolvePTR(serverIP);
                         }
                         catch
                         { }
@@ -66,7 +71,7 @@ namespace net.dnsclient.api.dnsclient
                     }
                     else
                     {
-                        IPAddress[] serverIPs = (new DnsClient() { PreferIPv6 = PREFER_IPv6, Tcp = TCP, Retries = RETRIES }).ResolveIP(server, PREFER_IPv6);
+                        IPAddress[] serverIPs = (new DnsClient() { PreferIPv6 = PREFER_IPv6, Protocol = PROTOCOL, Retries = RETRIES }).ResolveIP(server, PREFER_IPv6);
 
                         nameServers = new NameServerAddress[serverIPs.Length];
 
@@ -74,7 +79,7 @@ namespace net.dnsclient.api.dnsclient
                             nameServers[i] = new NameServerAddress(server, serverIPs[i]);
                     }
 
-                    dnsResponse = (new DnsClient(nameServers) { PreferIPv6 = PREFER_IPv6, Tcp = TCP, Retries = RETRIES }).Resolve(domain, type);
+                    dnsResponse = (new DnsClient(nameServers) { PreferIPv6 = PREFER_IPv6, Protocol = PROTOCOL, Retries = RETRIES }).Resolve(domain, type);
                 }
 
                 string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
