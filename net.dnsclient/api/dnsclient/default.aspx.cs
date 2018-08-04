@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
-using System.Net;
 using System.Web.UI;
 using TechnitiumLibrary.Net.Dns;
 
@@ -54,32 +53,23 @@ namespace net.dnsclient.api.dnsclient
                 }
                 else
                 {
-                    NameServerAddress[] nameServers;
+                    NameServerAddress nameServer = new NameServerAddress(server);
 
-                    if (IPAddress.TryParse(server, out IPAddress serverIP))
+                    if (nameServer.IPEndPoint == null)
                     {
-                        string serverDomain = null;
-
+                        nameServer.ResolveIPAddress(PREFER_IPv6, PROTOCOL, RETRIES);
+                    }
+                    else if (nameServer.DomainEndPoint == null)
+                    {
                         try
                         {
-                            serverDomain = (new DnsClient() { PreferIPv6 = PREFER_IPv6, Protocol = PROTOCOL, Retries = RETRIES }).ResolvePTR(serverIP);
+                            nameServer.ResolveDomainName(PREFER_IPv6, PROTOCOL, RETRIES);
                         }
                         catch
                         { }
-
-                        nameServers = new NameServerAddress[] { new NameServerAddress(serverDomain, serverIP) };
-                    }
-                    else
-                    {
-                        IPAddress[] serverIPs = (new DnsClient() { PreferIPv6 = PREFER_IPv6, Protocol = PROTOCOL, Retries = RETRIES }).ResolveIP(server, PREFER_IPv6);
-
-                        nameServers = new NameServerAddress[serverIPs.Length];
-
-                        for (int i = 0; i < serverIPs.Length; i++)
-                            nameServers[i] = new NameServerAddress(server, serverIPs[i]);
                     }
 
-                    dnsResponse = (new DnsClient(nameServers) { PreferIPv6 = PREFER_IPv6, Protocol = PROTOCOL, Retries = RETRIES }).Resolve(domain, type);
+                    dnsResponse = (new DnsClient(nameServer) { PreferIPv6 = PREFER_IPv6, Protocol = PROTOCOL, Retries = RETRIES }).Resolve(domain, type);
                 }
 
                 string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
