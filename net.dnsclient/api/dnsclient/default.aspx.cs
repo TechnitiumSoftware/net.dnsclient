@@ -57,13 +57,13 @@ namespace net.dnsclient.api.dnsclient
 
                     if (nameServer.IPEndPoint == null)
                     {
-                        nameServer.ResolveIPAddress(PREFER_IPv6, PROTOCOL, RETRIES);
+                        nameServer.ResolveIPAddress(null, null, PREFER_IPv6, PROTOCOL, RETRIES);
                     }
                     else if (nameServer.DomainEndPoint == null)
                     {
                         try
                         {
-                            nameServer.ResolveDomainName(PREFER_IPv6, PROTOCOL, RETRIES);
+                            nameServer.ResolveDomainName(null, null, PREFER_IPv6, PROTOCOL, RETRIES);
                         }
                         catch
                         { }
