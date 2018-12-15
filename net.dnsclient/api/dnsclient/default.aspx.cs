@@ -29,13 +29,9 @@ namespace net.dnsclient.api.dnsclient
     {
         const bool PREFER_IPv6 = false;
         const DnsClientProtocol PROTOCOL = DnsClientProtocol.Tcp;
+        const DnsClientProtocol RECURSIVE_RESOLVE_PROTOCOL = DnsClientProtocol.Tcp;
         const int RETRIES = 2;
-        const int MAX_STACK_COUNT = 10;
-
-        static _default()
-        {
-            DnsClient.RecursiveResolveDefaultProtocol = DnsClientProtocol.Tcp;
-        }
+        const int TIMEOUT = 2000;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -49,7 +45,7 @@ namespace net.dnsclient.api.dnsclient
 
                 if (server == "root-servers")
                 {
-                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type, new SimpleDnsCache(), null, PREFER_IPv6, PROTOCOL, RETRIES, MAX_STACK_COUNT);
+                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type, new SimpleDnsCache(), null, PREFER_IPv6, PROTOCOL, RETRIES, TIMEOUT, RECURSIVE_RESOLVE_PROTOCOL);
                 }
                 else
                 {
@@ -57,19 +53,19 @@ namespace net.dnsclient.api.dnsclient
 
                     if (nameServer.IPEndPoint == null)
                     {
-                        nameServer.ResolveIPAddress(null, null, PREFER_IPv6, PROTOCOL, RETRIES);
+                        nameServer.ResolveIPAddress(null, null, PREFER_IPv6, PROTOCOL, RETRIES, TIMEOUT);
                     }
                     else if (nameServer.DomainEndPoint == null)
                     {
                         try
                         {
-                            nameServer.ResolveDomainName(null, null, PREFER_IPv6, PROTOCOL, RETRIES);
+                            nameServer.ResolveDomainName(null, null, PREFER_IPv6, PROTOCOL, RETRIES, TIMEOUT);
                         }
                         catch
                         { }
                     }
 
-                    dnsResponse = (new DnsClient(nameServer) { PreferIPv6 = PREFER_IPv6, Protocol = PROTOCOL, Retries = RETRIES }).Resolve(domain, type);
+                    dnsResponse = (new DnsClient(nameServer) { PreferIPv6 = PREFER_IPv6, Protocol = PROTOCOL, Retries = RETRIES, Timeout = TIMEOUT, RecursiveResolveProtocol = RECURSIVE_RESOLVE_PROTOCOL }).Resolve(domain, type);
                 }
 
                 string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
