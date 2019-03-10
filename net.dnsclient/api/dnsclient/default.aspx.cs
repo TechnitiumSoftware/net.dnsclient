@@ -1,6 +1,6 @@
 ﻿/*
 Technitium DNS Client
-Copyright (C) 2018  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2019  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,8 +28,8 @@ namespace net.dnsclient.api.dnsclient
     public partial class _default : Page
     {
         const bool PREFER_IPv6 = false;
-        const DnsClientProtocol PROTOCOL = DnsClientProtocol.Tcp;
-        const DnsClientProtocol RECURSIVE_RESOLVE_PROTOCOL = DnsClientProtocol.Tcp;
+        const DnsTransportProtocol PROTOCOL = DnsTransportProtocol.Tcp;
+        const DnsTransportProtocol RECURSIVE_RESOLVE_PROTOCOL = DnsTransportProtocol.Tcp;
         const int RETRIES = 2;
         const int TIMEOUT = 2000;
 
@@ -40,6 +40,9 @@ namespace net.dnsclient.api.dnsclient
                 string server = Request.QueryString["server"];
                 string domain = Request.QueryString["domain"];
                 DnsResourceRecordType type = (DnsResourceRecordType)Enum.Parse(typeof(DnsResourceRecordType), Request.QueryString["type"]);
+
+                if (domain.EndsWith("."))
+                    domain = domain.Substring(0, domain.Length - 1);
 
                 DnsDatagram dnsResponse;
 
