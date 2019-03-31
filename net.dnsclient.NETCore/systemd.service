@@ -1,0 +1,17 @@
+[Unit]
+Description=Technitium DNS-over-HTTPS Web Application
+
+[Service]
+WorkingDirectory=/var/www/dnsclient.net
+ExecStart=/usr/bin/dotnet /var/www/dnsclient.net/net.dnsclient.NETCore.dll --server.urls http://localhost:8001/
+Restart=always
+# Restart service after 10 seconds if the dotnet service crashes:
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=dotnet-dnsclient
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+[Install]
+WantedBy=multi-user.target

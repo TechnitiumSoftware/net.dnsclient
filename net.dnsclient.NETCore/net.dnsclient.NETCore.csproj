@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <Authors>Shreyas Zare</Authors>
+    <Company>Technitium</Company>
+    <RepositoryUrl>https://github.com/TechnitiumSoftware/net.dnsclient</RepositoryUrl>
+    <PackageProjectUrl>https://dnsclient.net/</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/TechnitiumSoftware/net.dnsclient/blob/master/LICENSE</PackageLicenseUrl>
+    <Copyright>Copyright (C) 2019  Shreyas Zare (shreyas@technitium.com)</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="supervisor.conf" />
+    <None Remove="systemd.service" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="supervisor.conf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="systemd.service">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="TechnitiumLibrary.Net">
+      <HintPath>..\..\TechnitiumLibrary\bin\TechnitiumLibrary.Net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
