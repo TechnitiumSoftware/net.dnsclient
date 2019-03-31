@@ -46,9 +46,9 @@ namespace net.dnsclient.api.dnsclient
 
                 DnsDatagram dnsResponse;
 
-                if (server == "root-servers")
+                if (server == "recursive-resolver")
                 {
-                    dnsResponse = DnsClient.ResolveViaRootNameServers(domain, type, new SimpleDnsCache(), null, PREFER_IPv6, PROTOCOL, RETRIES, TIMEOUT, RECURSIVE_RESOLVE_PROTOCOL);
+                    dnsResponse = DnsClient.RecursiveResolve(domain, type, new SimpleDnsCache(), null, PREFER_IPv6, PROTOCOL, RETRIES, TIMEOUT, RECURSIVE_RESOLVE_PROTOCOL);
                 }
                 else
                 {
