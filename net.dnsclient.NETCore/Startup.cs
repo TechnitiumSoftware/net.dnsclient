@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.StaticFiles;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -37,13 +38,26 @@ namespace net.dnsclient.NETCore
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            int staticFilesCachePeriod;
+
             if (env.IsDevelopment())
             {
+                staticFilesCachePeriod = 60;
                 app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                staticFilesCachePeriod = 14400;
             }
 
             app.UseDefaultFiles();
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = delegate (StaticFileResponseContext ctx)
+                {
+                    ctx.Context.Response.Headers.Append("Cache-Control", $"public, max-age={staticFilesCachePeriod}");
+                }
+            });
 
             app.Run(async (context) =>
             {
