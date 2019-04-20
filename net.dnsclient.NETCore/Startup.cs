@@ -30,7 +30,7 @@ namespace net.dnsclient.NETCore
 {
     public class Startup
     {
-        const bool PREFER_IPv6 = false;
+        const bool PREFER_IPv6 = true;
         const DnsTransportProtocol PROTOCOL = DnsTransportProtocol.Udp;
         const DnsTransportProtocol RECURSIVE_RESOLVE_PROTOCOL = DnsTransportProtocol.Udp;
         const int RETRIES = 2;
@@ -79,7 +79,7 @@ namespace net.dnsclient.NETCore
 
                         if (server == "recursive-resolver")
                         {
-                            dnsResponse = DnsClient.RecursiveResolve(domain, type, new SimpleDnsCache(), null, PREFER_IPv6, PROTOCOL, RETRIES, TIMEOUT, RECURSIVE_RESOLVE_PROTOCOL);
+                            dnsResponse = DnsClient.RecursiveResolve(domain, type, null, new SimpleDnsCache(), null, PREFER_IPv6, PROTOCOL, RETRIES, TIMEOUT, RECURSIVE_RESOLVE_PROTOCOL);
                         }
                         else
                         {
@@ -99,7 +99,15 @@ namespace net.dnsclient.NETCore
                                 { }
                             }
 
-                            dnsResponse = (new DnsClient(nameServer) { PreferIPv6 = PREFER_IPv6, Protocol = PROTOCOL, Retries = RETRIES, Timeout = TIMEOUT, RecursiveResolveProtocol = RECURSIVE_RESOLVE_PROTOCOL }).Resolve(domain, type);
+                            DnsClient dnsClient = new DnsClient(nameServer) { PreferIPv6 = PREFER_IPv6, Protocol = PROTOCOL, Retries = RETRIES, Timeout = TIMEOUT, RecursiveResolveProtocol = RECURSIVE_RESOLVE_PROTOCOL };
+
+                            dnsResponse = dnsClient.Resolve(domain, type);
+
+                            if (dnsResponse.Header.Truncation && (dnsClient.Protocol == DnsTransportProtocol.Udp))
+                            {
+                                dnsClient.Protocol = DnsTransportProtocol.Tcp;
+                                dnsResponse = dnsClient.Resolve(domain, type);
+                            }
                         }
 
                         string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
