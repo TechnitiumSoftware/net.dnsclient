@@ -87,13 +87,13 @@ namespace net.dnsclient.NETCore
 
                             if (nameServer.IPEndPoint == null)
                             {
-                                nameServer.ResolveIPAddress(null, null, PREFER_IPv6, PROTOCOL, RETRIES, TIMEOUT);
+                                nameServer.ResolveIPAddress(null, null, PREFER_IPv6);
                             }
                             else if (nameServer.DomainEndPoint == null)
                             {
                                 try
                                 {
-                                    nameServer.ResolveDomainName(null, null, PREFER_IPv6, PROTOCOL, RETRIES, TIMEOUT);
+                                    nameServer.ResolveDomainName(null, null, PREFER_IPv6);
                                 }
                                 catch
                                 { }
