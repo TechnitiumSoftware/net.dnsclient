@@ -7,11 +7,11 @@
     <Company>Technitium</Company>
     <RepositoryUrl>https://github.com/TechnitiumSoftware/net.dnsclient</RepositoryUrl>
     <PackageProjectUrl>https://dnsclient.net/</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/TechnitiumSoftware/net.dnsclient/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <Copyright>Copyright (C) 2019  Shreyas Zare (shreyas@technitium.com)</Copyright>
-    <AssemblyVersion>1.2.0.0</AssemblyVersion>
-    <Version>1.2</Version>
-    <FileVersion>1.2.0.0</FileVersion>
+    <AssemblyVersion>1.3.0.0</AssemblyVersion>
+    <Version>1.3</Version>
+    <FileVersion>1.3.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
