@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
+using System.Threading.Tasks;
 using TechnitiumLibrary.Net.Dns;
 
 namespace net.dnsclient.NETCore
@@ -51,7 +52,7 @@ namespace net.dnsclient.NETCore
             }
 
             app.UseDefaultFiles();
-            app.UseStaticFiles(new StaticFileOptions
+            app.UseStaticFiles(new StaticFileOptions()
             {
                 OnPrepareResponse = delegate (StaticFileResponseContext ctx)
                 {
@@ -61,68 +62,71 @@ namespace net.dnsclient.NETCore
 
             app.Run(async (context) =>
             {
-                HttpRequest Request = context.Request;
-                HttpResponse Response = context.Response;
-
-                if (Request.Path == "/api/dnsclient/")
+                await Task.Run(() =>
                 {
-                    try
+                    HttpRequest Request = context.Request;
+                    HttpResponse Response = context.Response;
+
+                    if (Request.Path == "/api/dnsclient/")
                     {
-                        string server = Request.Query["server"];
-                        string domain = Request.Query["domain"];
-                        DnsResourceRecordType type = (DnsResourceRecordType)Enum.Parse(typeof(DnsResourceRecordType), Request.Query["type"]);
-
-                        if (domain.EndsWith("."))
-                            domain = domain.Substring(0, domain.Length - 1);
-
-                        DnsDatagram dnsResponse;
-
-                        if (server == "recursive-resolver")
+                        try
                         {
-                            dnsResponse = DnsClient.RecursiveResolve(domain, type, null, new SimpleDnsCache(), null, PREFER_IPv6, PROTOCOL, RETRIES, TIMEOUT, RECURSIVE_RESOLVE_PROTOCOL);
-                        }
-                        else
-                        {
-                            NameServerAddress nameServer = new NameServerAddress(server);
+                            string server = Request.Query["server"];
+                            string domain = Request.Query["domain"];
+                            DnsResourceRecordType type = (DnsResourceRecordType)Enum.Parse(typeof(DnsResourceRecordType), Request.Query["type"]);
 
-                            if (nameServer.IPEndPoint == null)
+                            if (domain.EndsWith("."))
+                                domain = domain.Substring(0, domain.Length - 1);
+
+                            DnsDatagram dnsResponse;
+
+                            if (server == "recursive-resolver")
                             {
-                                nameServer.ResolveIPAddress(null, null, PREFER_IPv6);
+                                dnsResponse = DnsClient.RecursiveResolve(domain, type, null, new SimpleDnsCache(), null, PREFER_IPv6, PROTOCOL, RETRIES, TIMEOUT, RECURSIVE_RESOLVE_PROTOCOL);
                             }
-                            else if (nameServer.DomainEndPoint == null)
+                            else
                             {
-                                try
+                                NameServerAddress nameServer = new NameServerAddress(server);
+
+                                if (nameServer.IPEndPoint == null)
                                 {
-                                    nameServer.ResolveDomainName(null, null, PREFER_IPv6);
+                                    nameServer.ResolveIPAddress(null, null, PREFER_IPv6);
                                 }
-                                catch
-                                { }
-                            }
+                                else if (nameServer.DomainEndPoint == null)
+                                {
+                                    try
+                                    {
+                                        nameServer.ResolveDomainName(null, null, PREFER_IPv6);
+                                    }
+                                    catch
+                                    { }
+                                }
 
-                            DnsClient dnsClient = new DnsClient(nameServer) { PreferIPv6 = PREFER_IPv6, Protocol = PROTOCOL, Retries = RETRIES, Timeout = TIMEOUT, RecursiveResolveProtocol = RECURSIVE_RESOLVE_PROTOCOL };
+                                DnsClient dnsClient = new DnsClient(nameServer) { PreferIPv6 = PREFER_IPv6, Protocol = PROTOCOL, Retries = RETRIES, Timeout = TIMEOUT, RecursiveResolveProtocol = RECURSIVE_RESOLVE_PROTOCOL };
 
-                            dnsResponse = dnsClient.Resolve(domain, type);
-
-                            if (dnsResponse.Header.Truncation && (dnsClient.Protocol == DnsTransportProtocol.Udp))
-                            {
-                                dnsClient.Protocol = DnsTransportProtocol.Tcp;
                                 dnsResponse = dnsClient.Resolve(domain, type);
+
+                                if (dnsResponse.Header.Truncation && (dnsClient.Protocol == DnsTransportProtocol.Udp))
+                                {
+                                    dnsClient.Protocol = DnsTransportProtocol.Tcp;
+                                    dnsResponse = dnsClient.Resolve(domain, type);
+                                }
                             }
+
+                            string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
+
+                            Response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                            Response.WriteAsync("{\"status\":\"ok\", \"response\":" + jsonResponse + "}");
                         }
+                        catch (Exception ex)
+                        {
+                            string jsonResponse = JsonConvert.SerializeObject(ex);
 
-                        string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
-
-                        Response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-                        await Response.WriteAsync("{\"status\":\"ok\", \"response\":" + jsonResponse + "}");
+                            Response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                            Response.WriteAsync("{\"status\":\"error\", \"response\":" + jsonResponse + "}");
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        string jsonResponse = JsonConvert.SerializeObject(ex);
-
-                        Response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-                        await Response.WriteAsync("{\"status\":\"error\", \"response\":" + jsonResponse + "}");
-                    }
-                }
+                });
             });
         }
     }
