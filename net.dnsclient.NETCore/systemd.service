@@ -1,5 +1,5 @@
 [Unit]
-Description=Technitium DNS-over-HTTPS Web Application
+Description=Technitium DNS Client
 
 [Service]
 WorkingDirectory=/var/www/dnsclient.net
