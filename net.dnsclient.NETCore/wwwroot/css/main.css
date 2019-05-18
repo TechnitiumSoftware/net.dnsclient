@@ -109,6 +109,24 @@ a {
     }
 }
 
+@media (min-width: 768px) {
+    #header .title, .container, #footer .content {
+        width: 750px;
+    }
+}
+
+@media (min-width: 992px) {
+    #header .title, .container, #footer .content {
+        width: 970px;
+    }
+}
+
+@media (min-width: 1200px) {
+    #header .title, .container, #footer .content {
+        width: 1170px;
+    }
+}
+
 .form-inline .form-group {
     margin-right: 10px;
     margin-bottom: 15px;
