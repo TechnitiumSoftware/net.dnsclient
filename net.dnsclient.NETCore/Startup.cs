@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using TechnitiumLibrary.Net.Dns;
 
@@ -32,10 +33,9 @@ namespace net.dnsclient.NETCore
     public class Startup
     {
         const bool PREFER_IPv6 = true;
-        const DnsTransportProtocol PROTOCOL = DnsTransportProtocol.Udp;
-        const DnsTransportProtocol RECURSIVE_RESOLVE_PROTOCOL = DnsTransportProtocol.Udp;
         const int RETRIES = 2;
         const int TIMEOUT = 2000;
+        const bool USE_TCP = false;
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
@@ -82,7 +82,14 @@ namespace net.dnsclient.NETCore
 
                             if (server == "recursive-resolver")
                             {
-                                dnsResponse = DnsClient.RecursiveResolve(domain, type, null, new SimpleDnsCache(), null, PREFER_IPv6, PROTOCOL, RETRIES, TIMEOUT, RECURSIVE_RESOLVE_PROTOCOL);
+                                DnsQuestionRecord question;
+
+                                if (type == DnsResourceRecordType.PTR)
+                                    question = new DnsQuestionRecord(IPAddress.Parse(domain), DnsClass.IN);
+                                else
+                                    question = new DnsQuestionRecord(domain, type, DnsClass.IN);
+
+                                dnsResponse = DnsClient.RecursiveResolve(question, null, null, null, PREFER_IPv6, RETRIES, TIMEOUT, USE_TCP);
                             }
                             else
                             {
@@ -102,7 +109,12 @@ namespace net.dnsclient.NETCore
                                     { }
                                 }
 
-                                DnsClient dnsClient = new DnsClient(nameServer) { PreferIPv6 = PREFER_IPv6, Protocol = PROTOCOL, Retries = RETRIES, Timeout = TIMEOUT, RecursiveResolveProtocol = RECURSIVE_RESOLVE_PROTOCOL };
+                                DnsClient dnsClient = new DnsClient(nameServer);
+
+                                dnsClient.PreferIPv6 = PREFER_IPv6;
+                                dnsClient.Protocol = USE_TCP ? DnsTransportProtocol.Tcp : DnsTransportProtocol.Udp;
+                                dnsClient.Retries = RETRIES;
+                                dnsClient.Timeout = TIMEOUT;
 
                                 dnsResponse = dnsClient.Resolve(domain, type);
 
