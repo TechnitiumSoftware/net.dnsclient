@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <meta name="keywords" content="Technitium, DNS Client, DNS Lookup, DNS Checker, Online DNS, root servers, dns lookup, name server lookup" />
+    <meta name="keywords" content="Technitium, DNS Client, DNS Lookup, DNS Checker, Online DNS, root servers, dns lookup, name server lookup, DNS-over-TLS, DNS-over-HTTPS" />
     <meta name="description" content="Technitium DNS Client is an online domain name lookup service to quickly query any name server including root servers." />
 
     <script src="/js/jquery.min.js"></script>
@@ -45,23 +45,38 @@
                 <div class="panel-body">
                     <form class="form-inline">
                         <div class="form-group">
-                            <label for="txtServer">Name Server</label>
+                            <label for="txtServer">Server</label>
                             <div class="input-group dropdown">
-                                <input type="text" class="form-control dropdown-toggle" id="txtServer" value="Recursive Query (recursive-resolver)" style="min-width: 300px;">
-                                <ul class="dropdown-menu">
+                                <input type="text" class="form-control dropdown-toggle" id="txtServer" value="Recursive Query (recursive-resolver)" style="min-width: 215px;">
+                                <ul class="dropdown-menu" id="optDnsClientNameServers">
                                     <li><a href="#">Recursive Query (recursive-resolver)</a></li>
                                     <li><a href="#">Cloudflare (1.1.1.1)</a></li>
                                     <li><a href="#">Cloudflare (1.0.0.1)</a></li>
                                     <li><a href="#">Cloudflare ([2606:4700:4700::1111])</a></li>
                                     <li><a href="#">Cloudflare ([2606:4700:4700::1001])</a></li>
+                                    <li><a href="#">Cloudflare TLS (cloudflare-dns.com (1.1.1.1:853))</a></li>
+                                    <li><a href="#">Cloudflare TLS (cloudflare-dns.com (1.0.0.1:853))</a></li>
+                                    <li><a href="#">Cloudflare TLS (cloudflare-dns.com ([2606:4700:4700::1111]:853))</a></li>
+                                    <li><a href="#">Cloudflare TLS (cloudflare-dns.com ([2606:4700:4700::1001]:853))</a></li>
+                                    <li><a href="#">Cloudflare HTTPS (https://cloudflare-dns.com/dns-query)</a></li>
+                                    <li><a href="#">Cloudflare HTTPS-JSON (https://cloudflare-dns.com/dns-query)</a></li>
                                     <li><a href="#">Google (8.8.8.8)</a></li>
                                     <li><a href="#">Google (8.8.4.4)</a></li>
                                     <li><a href="#">Google ([2001:4860:4860::8888])</a></li>
                                     <li><a href="#">Google ([2001:4860:4860::8844])</a></li>
+                                    <li><a href="#">Google TLS (dns.google (8.8.8.8:853))</a></li>
+                                    <li><a href="#">Google TLS (dns.google (8.8.4.4:853))</a></li>
+                                    <li><a href="#">Google TLS (dns.google ([2001:4860:4860::8888]:853))</a></li>
+                                    <li><a href="#">Google TLS (dns.google ([2001:4860:4860::8844]:853))</a></li>
+                                    <li><a href="#">Google HTTPS-JSON (https://dns.google.com/resolve)</a></li>
                                     <li><a href="#">Quad9 Secure (9.9.9.9)</a></li>
                                     <li><a href="#">Quad9 Secure ([2620:fe::fe])</a></li>
+                                    <li><a href="#">Quad9 Secure TLS (dns.quad9.net (9.9.9.9:853))</a></li>
+                                    <li><a href="#">Quad9 Secure TLS (dns.quad9.net ([2620:fe::fe]:853))</a></li>
+                                    <li><a href="#">Quad9 Secure HTTPS (https://dns.quad9.net/dns-query)</a></li>
                                     <li><a href="#">Quad9 Unsecure (9.9.9.10)</a></li>
                                     <li><a href="#">Quad9 Unsecure ([2620:fe::10])</a></li>
+                                    <li><a href="#">Quad9 Unsecure HTTPS (https://dns10.quad9.net/dns-query)</a></li>
                                     <li><a href="#">OpenDNS (208.67.222.222)</a></li>
                                     <li><a href="#">OpenDNS (208.67.220.220)</a></li>
                                     <li><a href="#">OpenDNS ([2620:0:ccc::2])</a></li>
@@ -92,7 +107,7 @@
 
                         <div class="form-group">
                             <label for="txtDomain">Domain</label>
-                            <input type="text" class="form-control" style="min-width: 320px;" id="txtDomain" placeholder="example.com">
+                            <input type="text" class="form-control" style="min-width: 240px;" id="txtDomain" placeholder="example.com">
                         </div>
 
                         <div class="form-group">
@@ -109,6 +124,17 @@
                                 <option>SRV</option>
                                 <option>CAA</option>
                                 <option>ANY</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="optProtocol">Protocol</label>
+                            <select class="form-control" id="optProtocol">
+                                <option>UDP</option>
+                                <option>TCP</option>
+                                <option>TLS</option>
+                                <option value="Https">HTTPS</option>
+                                <option value="HttpsJson">HTTPS (JSON)</option>
                             </select>
                         </div>
 
