@@ -73,7 +73,7 @@ namespace net.dnsclient.NETCore
                         {
                             string server = Request.Query["server"];
                             string domain = Request.Query["domain"];
-                            DnsResourceRecordType type = (DnsResourceRecordType)Enum.Parse(typeof(DnsResourceRecordType), Request.Query["type"]);
+                            DnsResourceRecordType type = (DnsResourceRecordType)Enum.Parse(typeof(DnsResourceRecordType), Request.Query["type"], true);
 
                             if (domain.EndsWith("."))
                                 domain = domain.Substring(0, domain.Length - 1);
@@ -93,6 +93,7 @@ namespace net.dnsclient.NETCore
                             }
                             else
                             {
+                                DnsTransportProtocol protocol = (DnsTransportProtocol)Enum.Parse(typeof(DnsTransportProtocol), Request.Query["protocol"], true);
                                 NameServerAddress nameServer = new NameServerAddress(server);
 
                                 if (nameServer.IPEndPoint == null)
@@ -112,7 +113,7 @@ namespace net.dnsclient.NETCore
                                 DnsClient dnsClient = new DnsClient(nameServer);
 
                                 dnsClient.PreferIPv6 = PREFER_IPv6;
-                                dnsClient.Protocol = USE_TCP ? DnsTransportProtocol.Tcp : DnsTransportProtocol.Udp;
+                                dnsClient.Protocol = protocol;
                                 dnsClient.Retries = RETRIES;
                                 dnsClient.Timeout = TIMEOUT;
 
