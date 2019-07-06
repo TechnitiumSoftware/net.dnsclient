@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -32,10 +33,12 @@ namespace net.dnsclient.NETCore
 {
     public class Startup
     {
-        const bool PREFER_IPv6 = true;
-        const int RETRIES = 2;
-        const int TIMEOUT = 2000;
-        const bool USE_TCP = false;
+        public IConfiguration Configuration { get; set; }
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
@@ -78,10 +81,15 @@ namespace net.dnsclient.NETCore
                             if (domain.EndsWith("."))
                                 domain = domain.Substring(0, domain.Length - 1);
 
+                            bool preferIpv6 = Configuration.GetValue<bool>("PreferIpv6");
+                            int retries = Configuration.GetValue<int>("Retries");
+                            int timeout = Configuration.GetValue<int>("Timeout");
+
                             DnsDatagram dnsResponse;
 
                             if (server == "recursive-resolver")
                             {
+                                bool useTcp = Configuration.GetValue<bool>("UseTcpForRecursion");
                                 DnsQuestionRecord question;
 
                                 if (type == DnsResourceRecordType.PTR)
@@ -89,7 +97,7 @@ namespace net.dnsclient.NETCore
                                 else
                                     question = new DnsQuestionRecord(domain, type, DnsClass.IN);
 
-                                dnsResponse = DnsClient.RecursiveResolve(question, null, null, null, PREFER_IPv6, RETRIES, TIMEOUT, USE_TCP);
+                                dnsResponse = DnsClient.RecursiveResolve(question, null, null, null, preferIpv6, retries, timeout, useTcp);
                             }
                             else
                             {
@@ -98,13 +106,13 @@ namespace net.dnsclient.NETCore
 
                                 if (nameServer.IPEndPoint == null)
                                 {
-                                    nameServer.ResolveIPAddress(null, null, PREFER_IPv6);
+                                    nameServer.ResolveIPAddress(null, null, preferIpv6);
                                 }
                                 else if (nameServer.DomainEndPoint == null)
                                 {
                                     try
                                     {
-                                        nameServer.ResolveDomainName(null, null, PREFER_IPv6);
+                                        nameServer.ResolveDomainName(null, null, preferIpv6);
                                     }
                                     catch
                                     { }
@@ -112,10 +120,10 @@ namespace net.dnsclient.NETCore
 
                                 DnsClient dnsClient = new DnsClient(nameServer);
 
-                                dnsClient.PreferIPv6 = PREFER_IPv6;
+                                dnsClient.PreferIPv6 = preferIpv6;
                                 dnsClient.Protocol = protocol;
-                                dnsClient.Retries = RETRIES;
-                                dnsClient.Timeout = TIMEOUT;
+                                dnsClient.Retries = retries;
+                                dnsClient.Timeout = timeout;
 
                                 dnsResponse = dnsClient.Resolve(domain, type);
 
