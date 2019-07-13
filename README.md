@@ -19,7 +19,8 @@ DNS Client is an ASP.NET Core web application hosted on https://dnsclient.net/. 
 - [DNS Client Portable Web App](https://go.technitium.com/?id=26) (1.08 MB)
 
 # Usage Instructions
-- Extract the downloaded tar archive.
+- Install [.NET Core v2.2](https://dotnet.microsoft.com/download) runtime.
+- Extract the downloaded DNS Client tar archive.
 - Run start.bat on Windows or start.sh on Linux to start the web app.
 - Open http://localhost:8001/ in any web browser to use the web app.
 - Edit the *appsettings.json* file for changing advance options like enabling IPv6 preference.
