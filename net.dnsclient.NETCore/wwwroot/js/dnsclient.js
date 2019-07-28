@@ -118,7 +118,7 @@ $(function () {
                         break;
 
                     case "error":
-                        showAlert("danger", "Error!", responseJSON.response.Message);
+                        showAlert("danger", "Error!", responseJSON.response.Message + (responseJSON.response.InnerException == null ? "" : " " + responseJSON.response.InnerException.Message));
                         divOutput.hide();
                         break;
 
