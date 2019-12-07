@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -40,7 +41,7 @@ namespace net.dnsclient.NETCore
             Configuration = configuration;
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
             int staticFilesCachePeriod;
 
@@ -78,6 +79,8 @@ namespace net.dnsclient.NETCore
                             string domain = Request.Query["domain"];
                             DnsResourceRecordType type = (DnsResourceRecordType)Enum.Parse(typeof(DnsResourceRecordType), Request.Query["type"], true);
 
+                            domain = domain.Trim();
+
                             if (domain.EndsWith("."))
                                 domain = domain.Substring(0, domain.Length - 1);
 
@@ -92,8 +95,8 @@ namespace net.dnsclient.NETCore
                                 bool useTcp = Configuration.GetValue<bool>("UseTcpForRecursion");
                                 DnsQuestionRecord question;
 
-                                if (type == DnsResourceRecordType.PTR)
-                                    question = new DnsQuestionRecord(IPAddress.Parse(domain), DnsClass.IN);
+                                if ((type == DnsResourceRecordType.PTR) && IPAddress.TryParse(domain, out IPAddress address))
+                                    question = new DnsQuestionRecord(address, DnsClass.IN);
                                 else
                                     question = new DnsQuestionRecord(domain, type, DnsClass.IN);
 
@@ -102,6 +105,10 @@ namespace net.dnsclient.NETCore
                             else
                             {
                                 DnsTransportProtocol protocol = (DnsTransportProtocol)Enum.Parse(typeof(DnsTransportProtocol), Request.Query["protocol"], true);
+
+                                if ((protocol == DnsTransportProtocol.Tls) && IPAddress.TryParse(server, out _))
+                                    server += ":853";
+
                                 NameServerAddress nameServer = new NameServerAddress(server);
 
                                 if (nameServer.IPEndPoint == null)
