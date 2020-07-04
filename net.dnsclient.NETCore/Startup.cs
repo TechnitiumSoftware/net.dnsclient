@@ -92,7 +92,6 @@ namespace net.dnsclient.NETCore
 
                             if (server == "recursive-resolver")
                             {
-                                bool useTcp = Configuration.GetValue<bool>("UseTcpForRecursion");
                                 DnsQuestionRecord question;
 
                                 if ((type == DnsResourceRecordType.PTR) && IPAddress.TryParse(domain, out IPAddress address))
@@ -100,7 +99,7 @@ namespace net.dnsclient.NETCore
                                 else
                                     question = new DnsQuestionRecord(domain, type, DnsClass.IN);
 
-                                dnsResponse = DnsClient.RecursiveResolve(question, null, null, null, preferIpv6, retries, timeout, useTcp);
+                                dnsResponse = DnsClient.RecursiveResolve(question, null, null, null, preferIpv6, retries, timeout);
                             }
                             else
                             {
@@ -109,7 +108,7 @@ namespace net.dnsclient.NETCore
                                 if ((protocol == DnsTransportProtocol.Tls) && IPAddress.TryParse(server, out _))
                                     server += ":853";
 
-                                NameServerAddress nameServer = new NameServerAddress(server);
+                                NameServerAddress nameServer = new NameServerAddress(server, protocol);
 
                                 if (nameServer.IPEndPoint == null)
                                 {
@@ -128,17 +127,10 @@ namespace net.dnsclient.NETCore
                                 DnsClient dnsClient = new DnsClient(nameServer);
 
                                 dnsClient.PreferIPv6 = preferIpv6;
-                                dnsClient.Protocol = protocol;
                                 dnsClient.Retries = retries;
                                 dnsClient.Timeout = timeout;
 
                                 dnsResponse = dnsClient.Resolve(domain, type);
-
-                                if (dnsResponse.Truncation && (dnsClient.Protocol == DnsTransportProtocol.Udp))
-                                {
-                                    dnsClient.Protocol = DnsTransportProtocol.Tcp;
-                                    dnsResponse = dnsClient.Resolve(domain, type);
-                                }
                             }
 
                             string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
