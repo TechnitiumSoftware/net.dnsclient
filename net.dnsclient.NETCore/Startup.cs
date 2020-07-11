@@ -105,7 +105,7 @@ namespace net.dnsclient.NETCore
                             {
                                 DnsTransportProtocol protocol = (DnsTransportProtocol)Enum.Parse(typeof(DnsTransportProtocol), Request.Query["protocol"], true);
 
-                                if ((protocol == DnsTransportProtocol.Tls) && IPAddress.TryParse(server, out _))
+                                if ((protocol == DnsTransportProtocol.Tls) && !server.Contains(":853"))
                                     server += ":853";
 
                                 NameServerAddress nameServer = new NameServerAddress(server, protocol);
