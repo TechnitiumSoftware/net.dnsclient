@@ -27,7 +27,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Net;
-using System.Threading.Tasks;
 using TechnitiumLibrary.Net.Dns;
 
 namespace net.dnsclient.NETCore
@@ -66,87 +65,84 @@ namespace net.dnsclient.NETCore
 
             app.Run(async (context) =>
             {
-                await Task.Run(() =>
+                HttpRequest request = context.Request;
+                HttpResponse response = context.Response;
+
+                if (request.Path == "/api/dnsclient/")
                 {
-                    HttpRequest Request = context.Request;
-                    HttpResponse Response = context.Response;
-
-                    if (Request.Path == "/api/dnsclient/")
+                    try
                     {
-                        try
+                        string server = request.Query["server"];
+                        string domain = request.Query["domain"];
+                        DnsResourceRecordType type = (DnsResourceRecordType)Enum.Parse(typeof(DnsResourceRecordType), request.Query["type"], true);
+
+                        domain = domain.Trim();
+
+                        if (domain.EndsWith("."))
+                            domain = domain.Substring(0, domain.Length - 1);
+
+                        bool preferIpv6 = Configuration.GetValue<bool>("PreferIpv6");
+                        int retries = Configuration.GetValue<int>("Retries");
+                        int timeout = Configuration.GetValue<int>("Timeout");
+
+                        DnsDatagram dnsResponse;
+
+                        if (server == "recursive-resolver")
                         {
-                            string server = Request.Query["server"];
-                            string domain = Request.Query["domain"];
-                            DnsResourceRecordType type = (DnsResourceRecordType)Enum.Parse(typeof(DnsResourceRecordType), Request.Query["type"], true);
+                            DnsQuestionRecord question;
 
-                            domain = domain.Trim();
-
-                            if (domain.EndsWith("."))
-                                domain = domain.Substring(0, domain.Length - 1);
-
-                            bool preferIpv6 = Configuration.GetValue<bool>("PreferIpv6");
-                            int retries = Configuration.GetValue<int>("Retries");
-                            int timeout = Configuration.GetValue<int>("Timeout");
-
-                            DnsDatagram dnsResponse;
-
-                            if (server == "recursive-resolver")
-                            {
-                                DnsQuestionRecord question;
-
-                                if ((type == DnsResourceRecordType.PTR) && IPAddress.TryParse(domain, out IPAddress address))
-                                    question = new DnsQuestionRecord(address, DnsClass.IN);
-                                else
-                                    question = new DnsQuestionRecord(domain, type, DnsClass.IN);
-
-                                dnsResponse = DnsClient.RecursiveResolve(question, null, null, null, preferIpv6, retries, timeout);
-                            }
+                            if ((type == DnsResourceRecordType.PTR) && IPAddress.TryParse(domain, out IPAddress address))
+                                question = new DnsQuestionRecord(address, DnsClass.IN);
                             else
+                                question = new DnsQuestionRecord(domain, type, DnsClass.IN);
+
+                            dnsResponse = await DnsClient.RecursiveResolveAsync(question, null, null, null, preferIpv6, retries, timeout);
+                        }
+                        else
+                        {
+                            DnsTransportProtocol protocol = (DnsTransportProtocol)Enum.Parse(typeof(DnsTransportProtocol), request.Query["protocol"], true);
+
+                            if ((protocol == DnsTransportProtocol.Tls) && !server.Contains(":853"))
+                                server += ":853";
+
+                            NameServerAddress nameServer = new NameServerAddress(server, protocol);
+
+                            if (nameServer.IPEndPoint == null)
                             {
-                                DnsTransportProtocol protocol = (DnsTransportProtocol)Enum.Parse(typeof(DnsTransportProtocol), Request.Query["protocol"], true);
-
-                                if ((protocol == DnsTransportProtocol.Tls) && !server.Contains(":853"))
-                                    server += ":853";
-
-                                NameServerAddress nameServer = new NameServerAddress(server, protocol);
-
-                                if (nameServer.IPEndPoint == null)
+                                await nameServer.ResolveIPAddressAsync(null, null, preferIpv6);
+                            }
+                            else if (nameServer.DomainEndPoint == null)
+                            {
+                                try
                                 {
-                                    nameServer.ResolveIPAddress(null, null, preferIpv6);
+                                    await nameServer.ResolveDomainNameAsync(null, null, preferIpv6);
                                 }
-                                else if (nameServer.DomainEndPoint == null)
-                                {
-                                    try
-                                    {
-                                        nameServer.ResolveDomainName(null, null, preferIpv6);
-                                    }
-                                    catch
-                                    { }
-                                }
-
-                                DnsClient dnsClient = new DnsClient(nameServer);
-
-                                dnsClient.PreferIPv6 = preferIpv6;
-                                dnsClient.Retries = retries;
-                                dnsClient.Timeout = timeout;
-
-                                dnsResponse = dnsClient.Resolve(domain, type);
+                                catch
+                                { }
                             }
 
-                            string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
+                            DnsClient dnsClient = new DnsClient(nameServer);
 
-                            Response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-                            Response.WriteAsync("{\"status\":\"ok\", \"response\":" + jsonResponse + "}");
-                        }
-                        catch (Exception ex)
-                        {
-                            string jsonResponse = JsonConvert.SerializeObject(ex);
+                            dnsClient.PreferIPv6 = preferIpv6;
+                            dnsClient.Retries = retries;
+                            dnsClient.Timeout = timeout;
 
-                            Response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-                            Response.WriteAsync("{\"status\":\"error\", \"response\":" + jsonResponse + "}");
+                            dnsResponse = await dnsClient.ResolveAsync(domain, type);
                         }
+
+                        string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
+
+                        response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                        await response.WriteAsync("{\"status\":\"ok\", \"response\":" + jsonResponse + "}");
                     }
-                });
+                    catch (Exception ex)
+                    {
+                        string jsonResponse = JsonConvert.SerializeObject(ex);
+
+                        response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                        await response.WriteAsync("{\"status\":\"error\", \"response\":" + jsonResponse + "}");
+                    }
+                }
             });
         }
     }
