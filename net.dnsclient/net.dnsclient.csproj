@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <TargetFramework>net5.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <Authors>Shreyas Zare</Authors>
     <Company>Technitium</Company>
@@ -9,12 +11,13 @@
     <PackageProjectUrl>https://dnsclient.net/</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <Copyright>Copyright (C) 2020  Shreyas Zare (shreyas@technitium.com)</Copyright>
-    <AssemblyVersion>1.9.0.0</AssemblyVersion>
-    <Version>1.9</Version>
-    <FileVersion>1.9.0.0</FileVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <Version>2.0</Version>
+    <FileVersion>2.0.0.0</FileVersion>
     <PackageId>DnsClient.Net</PackageId>
     <Product>DnsClient.Net</Product>
     <AssemblyName>DnsClientApp</AssemblyName>
+    <UserSecretsId>7030d121-871d-4d7e-a6b9-8178a1fa2869</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

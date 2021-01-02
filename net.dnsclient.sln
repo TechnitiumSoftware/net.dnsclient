@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.dnsclient.NETCore", "net.dnsclient.NETCore\net.dnsclient.NETCore.csproj", "{D50E429B-66BA-4FB9-BFC4-3671196A27AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "net.dnsclient", "net.dnsclient\net.dnsclient.csproj", "{D50E429B-66BA-4FB9-BFC4-3671196A27AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
