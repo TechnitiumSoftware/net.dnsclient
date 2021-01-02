@@ -10,7 +10,7 @@
     <RepositoryUrl>https://github.com/TechnitiumSoftware/net.dnsclient</RepositoryUrl>
     <PackageProjectUrl>https://dnsclient.net/</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
-    <Copyright>Copyright (C) 2020  Shreyas Zare (shreyas@technitium.com)</Copyright>
+    <Copyright>Copyright (C) 2021  Shreyas Zare (shreyas@technitium.com)</Copyright>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <Version>2.0</Version>
     <FileVersion>2.0.0.0</FileVersion>
@@ -21,7 +21,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="supervisor.conf" />
     <None Remove="systemd.service" />
   </ItemGroup>
 
