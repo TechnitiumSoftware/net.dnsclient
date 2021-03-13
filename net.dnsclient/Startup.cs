@@ -83,6 +83,7 @@ namespace net.dnsclient.NETCore
 
                         bool preferIpv6 = Configuration.GetValue<bool>("PreferIpv6");
                         bool randomizeName = false;
+                        bool qnameMinimization = false;
                         int retries = Configuration.GetValue<int>("Retries");
                         int timeout = Configuration.GetValue<int>("Timeout");
 
@@ -97,7 +98,7 @@ namespace net.dnsclient.NETCore
                             else
                                 question = new DnsQuestionRecord(domain, type, DnsClass.IN);
 
-                            dnsResponse = await DnsClient.RecursiveResolveAsync(question, null, null, null, preferIpv6, randomizeName, retries, timeout);
+                            dnsResponse = await DnsClient.RecursiveResolveAsync(question, null, null, preferIpv6, randomizeName, qnameMinimization, retries, timeout);
                         }
                         else
                         {
