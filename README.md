@@ -16,7 +16,7 @@ DNS Client is an ASP.NET Core web application hosted on https://dnsclient.net/. 
 - Web app interface works with any modern web browser like Chrome, FireFox or Edge.
 
 # Download
-- [DNS Client Portable Web App](https://go.technitium.com/?id=26) (1.08 MB)
+- [DNS Client Portable Web App](https://go.technitium.com/?id=26)
 
 # Usage Instructions
 - Install [.NET 5](https://dotnet.microsoft.com/download) runtime.
