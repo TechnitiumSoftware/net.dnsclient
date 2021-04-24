@@ -1,1 +1,1 @@
-dotnet DnsClientApp.dll --server.urls http://localhost:8001/
+dotnet DnsClientApp.dll --urls http://localhost:8001/

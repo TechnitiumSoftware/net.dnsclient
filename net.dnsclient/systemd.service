@@ -3,7 +3,7 @@ Description=Technitium DNS Client
 
 [Service]
 WorkingDirectory=/var/www/dnsclient.net
-ExecStart=/usr/bin/dotnet /var/www/dnsclient.net/DnsClientApp.dll --server.urls http://localhost:8001/
+ExecStart=/usr/bin/dotnet /var/www/dnsclient.net/DnsClientApp.dll --urls http://localhost:8001/
 Restart=always
 # Restart service after 10 seconds if the dotnet service crashes:
 RestartSec=10
