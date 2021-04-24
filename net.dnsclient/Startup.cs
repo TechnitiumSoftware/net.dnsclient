@@ -1,6 +1,6 @@
 ﻿/*
 Technitium dnsclient.net
-Copyright (C) 2020  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2021  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ using System;
 using System.Net;
 using TechnitiumLibrary.Net.Dns;
 
-namespace net.dnsclient.NETCore
+namespace net.dnsclient
 {
     public class Startup
     {
