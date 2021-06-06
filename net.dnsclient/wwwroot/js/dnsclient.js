@@ -1,6 +1,6 @@
 ﻿/*
 Technitium dnsclient.net
-Copyright (C) 2020  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2021  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -171,6 +171,17 @@ $(function () {
             }
         }
     }
+
+    //load version
+    $.ajax({
+        type: "GET",
+        url: "/api/version",
+        dataType: 'json',
+        cache: false,
+        success: function (responseJSON, status, jqXHR) {
+            $("#lblVersion").text("v" + responseJSON.response.version);
+        }
+    });
 });
 
 function showAlert(type, title, message) {
