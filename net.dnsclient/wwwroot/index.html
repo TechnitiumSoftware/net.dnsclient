@@ -26,8 +26,13 @@
     <div id="content">
         <div class="container">
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">DNS Client</h3>
+                <div class="panel-heading" style="height: 38px;">
+                    <div style="float: left;">
+                        <h3 class="panel-title">DNS Client</h3>
+                    </div>
+                    <div style="float: right;">
+                        <span id="lblVersion" style="color: gray;"></span>
+                    </div>
                 </div>
                 <div class="panel-body">
                     <form class="form-inline">
@@ -130,7 +135,7 @@
                             </select>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" style="margin-right: 0px;">
                             <button type="submit" class="btn btn-primary" id="btnResolve" data-loading-text="Resolving..." onclick="return false;">Resolve</button>
                         </div>
                     </form>
