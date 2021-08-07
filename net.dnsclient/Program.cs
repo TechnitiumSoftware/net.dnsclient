@@ -38,6 +38,6 @@ namespace net.dnsclient
                     config.SetBasePath(Directory.GetCurrentDirectory());
                     config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
                 })
-                .UseStartup<Startup>();
+                .UseStartup<DnsClientApp>();
     }
 }
