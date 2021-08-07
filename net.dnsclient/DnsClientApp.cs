@@ -32,11 +32,11 @@ using TechnitiumLibrary.Net.Dns;
 
 namespace net.dnsclient
 {
-    public class Startup
+    public class DnsClientApp
     {
         public IConfiguration Configuration { get; set; }
 
-        public Startup(IConfiguration configuration)
+        public DnsClientApp(IConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -76,12 +76,9 @@ namespace net.dnsclient
                         {
                             string server = request.Query["server"];
                             string domain = request.Query["domain"];
-                            DnsResourceRecordType type = (DnsResourceRecordType)Enum.Parse(typeof(DnsResourceRecordType), request.Query["type"], true);
+                            DnsResourceRecordType type = Enum.Parse<DnsResourceRecordType>(request.Query["type"], true);
 
-                            domain = domain.Trim();
-
-                            if (domain.EndsWith("."))
-                                domain = domain.Substring(0, domain.Length - 1);
+                            domain = domain.Trim(new char[] { '\t', ' ', '.' });
 
                             bool preferIpv6 = Configuration.GetValue<bool>("PreferIpv6");
                             bool randomizeName = false;
@@ -104,12 +101,11 @@ namespace net.dnsclient
                             }
                             else
                             {
-                                DnsTransportProtocol protocol = (DnsTransportProtocol)Enum.Parse(typeof(DnsTransportProtocol), request.Query["protocol"], true);
+                                DnsTransportProtocol protocol = Enum.Parse<DnsTransportProtocol>(request.Query["protocol"], true);
+                                NameServerAddress nameServer = new NameServerAddress(server);
 
-                                if ((protocol == DnsTransportProtocol.Tls) && !server.Contains(":853"))
-                                    server += ":853";
-
-                                NameServerAddress nameServer = new NameServerAddress(server, protocol);
+                                if (nameServer.Protocol != protocol)
+                                    nameServer = nameServer.ChangeProtocol(protocol);
 
                                 if (nameServer.IPEndPoint == null)
                                 {
