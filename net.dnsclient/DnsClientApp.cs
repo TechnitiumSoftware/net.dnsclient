@@ -97,7 +97,7 @@ namespace net.dnsclient
                                 else
                                     question = new DnsQuestionRecord(domain, type, DnsClass.IN);
 
-                                dnsResponse = await DnsClient.RecursiveResolveAsync(question, null, null, preferIpv6, randomizeName, qnameMinimization, retries, timeout);
+                                dnsResponse = await DnsClient.RecursiveResolveAsync(question, null, null, preferIpv6, randomizeName, qnameMinimization, false, retries, timeout);
                             }
                             else
                             {
