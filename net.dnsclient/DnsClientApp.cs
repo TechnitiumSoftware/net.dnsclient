@@ -1,6 +1,6 @@
 ﻿/*
 Technitium dnsclient.net
-Copyright (C) 2021  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2022  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ using System;
 using System.Net;
 using System.Reflection;
 using TechnitiumLibrary.Net.Dns;
+using TechnitiumLibrary.Net.Dns.ResourceRecords;
 
 namespace net.dnsclient
 {
@@ -78,15 +79,22 @@ namespace net.dnsclient
                             string domain = request.Query["domain"];
                             DnsResourceRecordType type = Enum.Parse<DnsResourceRecordType>(request.Query["type"], true);
 
+                            bool dnssecValidation = false;
+                            string strDnssecValidation = request.Query["dnssec"];
+                            if (!string.IsNullOrEmpty(strDnssecValidation))
+                                dnssecValidation = bool.Parse(strDnssecValidation);
+
                             domain = domain.Trim(new char[] { '\t', ' ', '.' });
 
                             bool preferIpv6 = Configuration.GetValue<bool>("PreferIpv6");
+                            ushort udpPayloadSize = Configuration.GetValue<ushort>("UdpPayloadSize");
                             bool randomizeName = false;
                             bool qnameMinimization = false;
                             int retries = Configuration.GetValue<int>("Retries");
                             int timeout = Configuration.GetValue<int>("Timeout");
 
                             DnsDatagram dnsResponse;
+                            string dnssecErrorMessage = null;
 
                             if (server == "recursive-resolver")
                             {
@@ -101,7 +109,15 @@ namespace net.dnsclient
                                 dnsCache.MinimumRecordTtl = 0;
                                 dnsCache.MaximumRecordTtl = 7 * 24 * 60 * 60;
 
-                                dnsResponse = await DnsClient.RecursiveResolveAsync(question, dnsCache, null, preferIpv6, randomizeName, qnameMinimization, false, retries, timeout);
+                                try
+                                {
+                                    dnsResponse = await DnsClient.RecursiveResolveAsync(question, dnsCache, null, preferIpv6, udpPayloadSize, randomizeName, qnameMinimization, false, dnssecValidation, retries, timeout);
+                                }
+                                catch (DnsClientResponseDnssecValidationException ex)
+                                {
+                                    dnsResponse = ex.Response;
+                                    dnssecErrorMessage = ex.Message;
+                                }
                             }
                             else
                             {
@@ -131,14 +147,28 @@ namespace net.dnsclient
                                 dnsClient.RandomizeName = randomizeName;
                                 dnsClient.Retries = retries;
                                 dnsClient.Timeout = timeout;
+                                dnsClient.UdpPayloadSize = udpPayloadSize;
+                                dnsClient.DnssecValidation = dnssecValidation;
 
-                                dnsResponse = await dnsClient.ResolveAsync(domain, type);
+                                try
+                                {
+                                    dnsResponse = await dnsClient.ResolveAsync(domain, type);
+                                }
+                                catch (DnsClientResponseDnssecValidationException ex)
+                                {
+                                    dnsResponse = ex.Response;
+                                    dnssecErrorMessage = ex.Message;
+                                }
                             }
 
                             string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
 
                             response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-                            await response.WriteAsync("{\"status\":\"ok\", \"response\":" + jsonResponse + "}");
+
+                            if (dnssecErrorMessage is null)
+                                await response.WriteAsync("{\"status\":\"ok\", \"response\":" + jsonResponse + "}");
+                            else
+                                await response.WriteAsync("{\"status\":\"warning\", \"warningMessage\": \"" + dnssecErrorMessage + "\", \"response\":" + jsonResponse + "}");
                         }
                         catch (Exception ex)
                         {
