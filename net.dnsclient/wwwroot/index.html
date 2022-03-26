@@ -39,8 +39,8 @@
                         <div class="form-group">
                             <label for="txtServer">Server</label>
                             <div class="input-group dropdown">
-                                <input type="text" class="form-control dropdown-toggle" id="txtServer" value="Recursive Query {recursive-resolver}" style="min-width: 215px;">
-                                <ul class="dropdown-menu" id="optDnsClientNameServers">
+                                <input type="text" class="form-control dropdown-toggle" id="txtServer" value="Recursive Query {recursive-resolver}" style="min-width: 240px; border-right: 0px;">
+                                <ul id="optDnsClientNameServers" class="dropdown-menu" style="max-height: 500px; overflow-y: scroll;">
                                     <li><a href="#">Recursive Query {recursive-resolver}</a></li>
                                     <li><a href="#">Cloudflare {1.1.1.1}</a></li>
                                     <li><a href="#">Cloudflare {1.0.0.1}</a></li>
@@ -98,18 +98,18 @@
                                     <li><a href="#">l.root-servers.net</a></li>
                                     <li><a href="#">m.root-servers.net</a></li>
                                 </ul>
-                                <span role="button" class="input-group-addon dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></span>
+                                <span role="button" class="input-group-addon dropdown-toggle" style="background-color: white;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></span>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="txtDomain">Domain</label>
-                            <input type="text" class="form-control" style="min-width: 240px;" id="txtDomain" placeholder="example.com">
+                            <input type="text" class="form-control" style="min-width: 270px;" id="txtDomain" placeholder="example.com">
                         </div>
 
                         <div class="form-group">
                             <label for="optType">Type</label>
-                            <select class="form-control" id="optType">
+                            <select class="form-control" id="optType" style="padding-left: 6px; padding-right: 0px;">
                                 <option>A</option>
                                 <option>NS</option>
                                 <option>CNAME</option>
@@ -120,14 +120,20 @@
                                 <option>AAAA</option>
                                 <option>SRV</option>
                                 <option>DNAME</option>
+                                <option>DS</option>
+                                <option>RRSIG</option>
+                                <option>NSEC</option>
+                                <option>DNSKEY</option>
+                                <option>NSEC3</option>
+                                <option>NSEC3PARAM</option>
                                 <option>CAA</option>
                                 <option>ANY</option>
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <label for="optProtocol">Protocol</label>
-                            <select class="form-control" id="optProtocol">
+                            <label for="optProtocol">DNS-over-</label>
+                            <select class="form-control" id="optProtocol" style="padding-left: 6px; padding-right: 0px;">
                                 <option>UDP</option>
                                 <option>TCP</option>
                                 <option>TLS</option>
@@ -136,8 +142,16 @@
                             </select>
                         </div>
 
-                        <div class="form-group" style="margin-right: 0px;">
+                        <div class="form-group">
                             <button type="submit" class="btn btn-primary" id="btnResolve" data-loading-text="Resolving..." onclick="return false;">Resolve</button>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="chkDnssecValidation"> Enable DNSSEC Validation
+                                </label>
+                            </div>
                         </div>
                     </form>
 

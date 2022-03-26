@@ -1,6 +1,6 @@
 ﻿/*
 Technitium dnsclient.net
-Copyright (C) 2021  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2022  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@ $(function () {
         var domain = $("#txtDomain").val();
         var type = $("#optType").val();
         var protocol = $("#optProtocol").val();
+        var dnssecValidation = $("#chkDnssecValidation").prop("checked");
 
         {
             var i = server.indexOf("{");
@@ -70,12 +71,14 @@ $(function () {
         if ((server === null) || (server === "")) {
             showAlert("warning", "Missing!", "Please enter a valid DNS server.");
             btn.button('reset');
+            $("#txtServer").focus();
             return;
         }
 
         if ((domain === null) || (domain === "")) {
             showAlert("warning", "Missing!", "Please enter a domain name to query.");
             btn.button('reset');
+            $("#txtDomain").focus();
             return;
         }
         else {
@@ -95,13 +98,13 @@ $(function () {
             }
         }
 
-        window.location.hash = encodeURIComponent($("#txtServer").val()) + "/" + encodeURIComponent(domain) + "/" + type + "/" + protocol;
+        window.location.hash = encodeURIComponent($("#txtServer").val()) + "/" + encodeURIComponent(domain) + "/" + type + "/" + protocol + "/" + dnssecValidation;
 
-        var apiUrl = "/api/dnsclient/?server=" + server + "&domain=" + domain + "&type=" + type + "&protocol=" + protocol;
+        var apiUrl = "/api/dnsclient/?server=" + server + "&domain=" + domain + "&type=" + type + "&protocol=" + protocol + "&dnssec=" + dnssecValidation;
         var divOutput = $("#divOutput");
 
         //show loader
-        divOutput.html("<pre><img class='center-block' src='/img/loader.gif' /></pre>");
+        divOutput.html("<pre style=\"margin-top: 20px; margin-bottom: 0px;\"><img class='center-block' src='/img/loader.gif' /></pre>");
         divOutput.show();
         hideAlert();
 
@@ -114,7 +117,12 @@ $(function () {
 
                 switch (responseJSON.status) {
                     case "ok":
-                        divOutput.html("<pre>" + JSON.stringify(responseJSON.response, null, 2) + "</pre>");
+                        divOutput.html("<pre style=\"margin-top: 20px; margin-bottom: 0px;\">" + JSON.stringify(responseJSON.response, null, 2) + "</pre>");
+                        break;
+
+                    case "warning":
+                        showAlert("warning", "Warning!", responseJSON.warningMessage);
+                        divOutput.html("<pre style=\"margin-top: 20px; margin-bottom: 0px;\">" + JSON.stringify(responseJSON.response, null, 2) + "</pre>");
                         break;
 
                     case "error":
@@ -164,6 +172,11 @@ $(function () {
                 else
                     $("#optProtocol").val("UDP");
 
+                if (values.length === 5)
+                    $("#chkDnssecValidation").prop("checked", values[4].toLowerCase() === "true");
+                else
+                    $("#chkDnssecValidation").prop("checked", false);
+
                 if ($("#txtServer").val() === "Recursive Query (recursive-resolver)")
                     $("#txtServer").val("Recursive Query {recursive-resolver}");
 
@@ -185,7 +198,7 @@ $(function () {
 });
 
 function showAlert(type, title, message) {
-    var alertHTML = "<div class=\"alert alert-" + type + "\" role=\"alert\">\
+    var alertHTML = "<div class=\"alert alert-" + type + "\" style=\"margin-top: 20px; margin-bottom: 0px;\" role=\"alert\">\
     <button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>\
     <strong>" + title + "</strong>&nbsp;" + message + "\
     </div>";
