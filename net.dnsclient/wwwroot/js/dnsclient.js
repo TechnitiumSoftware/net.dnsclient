@@ -167,12 +167,12 @@ $(function () {
                 $("#txtDomain").val(decodeURIComponent(values[1]));
                 $("#optType").val(values[2]);
 
-                if (values.length === 4)
+                if (values.length >= 4)
                     $("#optProtocol").val(values[3]);
                 else
                     $("#optProtocol").val("UDP");
 
-                if (values.length === 5)
+                if (values.length >= 5)
                     $("#chkDnssecValidation").prop("checked", values[4].toLowerCase() === "true");
                 else
                     $("#chkDnssecValidation").prop("checked", false);
