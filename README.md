@@ -26,6 +26,9 @@ DNS Client is an ASP.NET Core web application hosted on https://dnsclient.net/. 
 - Open http://localhost:8001/ in any web browser to use the web app.
 - Edit the *appsettings.json* file for changing advance options like enabling IPv6 preference.
 
+# Docker
+Pull the official image from [Docker Hub](https://hub.docker.com/r/technitium/dns-client). Use the [docker-compose.yml](https://github.com/TechnitiumSoftware/net.dnsclient/blob/master/docker-compose.yml) example to create a new container and edit it as required for your deployments.
+
 # Support
 For support, send an email to support@technitium.com. For any issues, feedback, or feature request, create an issue on [GitHub](https://github.com/TechnitiumSoftware/net.dnsclient/issues).
 
