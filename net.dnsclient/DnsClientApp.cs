@@ -127,11 +127,11 @@ namespace net.dnsclient
                                 if (nameServer.Protocol != protocol)
                                     nameServer = nameServer.ChangeProtocol(protocol);
 
-                                if (nameServer.IPEndPoint == null)
+                                if (nameServer.IsIPEndPointStale)
                                 {
                                     await nameServer.ResolveIPAddressAsync(new DnsClient() { PreferIPv6 = preferIpv6, RandomizeName = randomizeName, Retries = retries, Timeout = timeout }, preferIpv6);
                                 }
-                                else if (nameServer.DomainEndPoint == null)
+                                else if ((nameServer.DomainEndPoint is null) && ((protocol == DnsTransportProtocol.Udp) || (protocol == DnsTransportProtocol.Tcp)))
                                 {
                                     try
                                     {
