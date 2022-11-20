@@ -111,7 +111,7 @@ namespace net.dnsclient
 
                                 try
                                 {
-                                    dnsResponse = await DnsClient.RecursiveResolveAsync(question, dnsCache, null, preferIpv6, udpPayloadSize, randomizeName, qnameMinimization, false, dnssecValidation, retries, timeout);
+                                    dnsResponse = await DnsClient.RecursiveResolveAsync(question, dnsCache, null, preferIpv6, udpPayloadSize, randomizeName, qnameMinimization, false, dnssecValidation, null, retries, timeout);
                                 }
                                 catch (DnsClientResponseDnssecValidationException ex)
                                 {
