@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
 LABEL product="Technitium DNS Client"
 LABEL vendor="Technitium"
 LABEL email="support@technitium.com"
