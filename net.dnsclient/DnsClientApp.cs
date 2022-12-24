@@ -23,11 +23,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System;
+using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Text.Json;
 using TechnitiumLibrary.Net.Dns;
 using TechnitiumLibrary.Net.Dns.ResourceRecords;
 
@@ -161,21 +161,66 @@ namespace net.dnsclient
                                 }
                             }
 
-                            string jsonResponse = JsonConvert.SerializeObject(dnsResponse, new StringEnumConverter());
+                            using (MemoryStream mS = new MemoryStream())
+                            {
+                                Utf8JsonWriter jsonWriter = new Utf8JsonWriter(mS);
+                                jsonWriter.WriteStartObject();
 
-                            response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                                if (dnssecErrorMessage is null)
+                                {
+                                    jsonWriter.WriteString("status", "ok");
 
-                            if (dnssecErrorMessage is null)
-                                await response.WriteAsync("{\"status\":\"ok\", \"response\":" + jsonResponse + "}");
-                            else
-                                await response.WriteAsync("{\"status\":\"warning\", \"warningMessage\": \"" + dnssecErrorMessage + "\", \"response\":" + jsonResponse + "}");
+                                    jsonWriter.WritePropertyName("response");
+                                    dnsResponse.SerializeTo(jsonWriter);
+                                }
+                                else
+                                {
+                                    jsonWriter.WriteString("status", "warning");
+                                    jsonWriter.WriteString("warningMessage", dnssecErrorMessage);
+
+                                    jsonWriter.WritePropertyName("response");
+                                    dnsResponse.SerializeTo(jsonWriter);
+                                }
+
+                                jsonWriter.WriteEndObject();
+                                jsonWriter.Flush();
+
+                                response.ContentType = "application/json; charset=utf-8";
+                                response.ContentLength = mS.Length;
+
+                                mS.Position = 0;
+                                using (Stream stream = response.Body)
+                                {
+                                    await mS.CopyToAsync(stream);
+                                }
+                            }
                         }
                         catch (Exception ex)
                         {
-                            string jsonResponse = JsonConvert.SerializeObject(ex);
+                            using (MemoryStream mS = new MemoryStream())
+                            {
+                                Utf8JsonWriter jsonWriter = new Utf8JsonWriter(mS);
+                                jsonWriter.WriteStartObject();
 
-                            response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-                            await response.WriteAsync("{\"status\":\"error\", \"response\":" + jsonResponse + "}");
+                                jsonWriter.WriteString("status", "error");
+                                jsonWriter.WriteString("errorMessage", ex.Message);
+                                jsonWriter.WriteString("stackTrace", ex.StackTrace);
+
+                                if (ex.InnerException != null)
+                                    jsonWriter.WriteString("innerErrorMessage", ex.InnerException.Message);
+
+                                jsonWriter.WriteEndObject();
+                                jsonWriter.Flush();
+
+                                response.ContentType = "application/json; charset=utf-8";
+                                response.ContentLength = mS.Length;
+
+                                mS.Position = 0;
+                                using (Stream stream = response.Body)
+                                {
+                                    await mS.CopyToAsync(stream);
+                                }
+                            }
                         }
                         break;
 
