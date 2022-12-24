@@ -27,10 +27,8 @@ $(function () {
 
         if ((itemText.indexOf("TLS") !== -1) || (itemText.indexOf(":853") !== -1))
             $("#optProtocol").val("TLS");
-        else if (itemText.indexOf("HTTPS-JSON") !== -1)
-            $("#optProtocol").val("HttpsJson");
         else if ((itemText.indexOf("HTTPS") !== -1) || (itemText.indexOf("http://") !== -1) || (itemText.indexOf("https://") !== -1))
-            $("#optProtocol").val("Https");
+            $("#optProtocol").val("HTTPS");
         else {
             switch ($("#optProtocol").val()) {
                 case "UDP":
@@ -126,7 +124,7 @@ $(function () {
                         break;
 
                     case "error":
-                        showAlert("danger", "Error!", responseJSON.response.Message + (responseJSON.response.InnerException == null ? "" : " " + responseJSON.response.InnerException.Message));
+                        showAlert("danger", "Error!", responseJSON.errorMessage + (responseJSON.innerErrorMessage == null ? "" : " " + responseJSON.innerErrorMessage));
                         divOutput.hide();
                         break;
 
