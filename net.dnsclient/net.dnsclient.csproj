@@ -10,8 +10,8 @@
     <RepositoryUrl>https://github.com/TechnitiumSoftware/net.dnsclient</RepositoryUrl>
     <PackageProjectUrl>https://dnsclient.net/</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
-    <Copyright>Copyright (C) 2022  Shreyas Zare (shreyas@technitium.com)</Copyright>
-    <Version>4.0.1</Version>
+    <Copyright>Copyright (C) 2023  Shreyas Zare (shreyas@technitium.com)</Copyright>
+    <Version>5.0</Version>
     <PackageId>DnsClient.Net</PackageId>
     <Product>DnsClient.Net</Product>
     <AssemblyName>DnsClientApp</AssemblyName>
@@ -34,10 +34,6 @@
     <Content Include="systemd.service">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
   <ItemGroup>
