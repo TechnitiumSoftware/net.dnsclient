@@ -1,6 +1,6 @@
 ﻿/*
 Technitium dnsclient.net
-Copyright (C) 2022  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2023  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -122,7 +122,7 @@ namespace net.dnsclient
                             else
                             {
                                 DnsTransportProtocol protocol = Enum.Parse<DnsTransportProtocol>(request.Query["protocol"], true);
-                                NameServerAddress nameServer = new NameServerAddress(server);
+                                NameServerAddress nameServer = NameServerAddress.Parse(server);
 
                                 if (nameServer.Protocol != protocol)
                                     nameServer = nameServer.ChangeProtocol(protocol);
