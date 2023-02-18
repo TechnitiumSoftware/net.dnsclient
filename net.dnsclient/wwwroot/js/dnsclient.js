@@ -1,6 +1,6 @@
 ﻿/*
 Technitium dnsclient.net
-Copyright (C) 2022  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2023  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,7 +25,9 @@ $(function () {
         var itemText = $(this).text();
         $(this).closest('.dropdown').find('input').val(itemText);
 
-        if ((itemText.indexOf("TLS") !== -1) || (itemText.indexOf(":853") !== -1))
+        if (itemText.indexOf("QUIC") !== -1)
+            $("#optProtocol").val("QUIC");
+        else if ((itemText.indexOf("TLS") !== -1) || (itemText.indexOf(":853") !== -1))
             $("#optProtocol").val("TLS");
         else if ((itemText.indexOf("HTTPS") !== -1) || (itemText.indexOf("http://") !== -1) || (itemText.indexOf("https://") !== -1))
             $("#optProtocol").val("HTTPS");
