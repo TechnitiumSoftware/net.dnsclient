@@ -50,7 +50,7 @@ $(function () {
 
         var server = $("#txtServer").val();
 
-        if (server.indexOf("recursive-resolver") !== -1)
+        if ((server.indexOf("recursive-resolver") !== -1) || (server.indexOf("system-dns") !== -1))
             $("#optProtocol").val("UDP");
 
         var domain = $("#txtDomain").val();
