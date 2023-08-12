@@ -96,7 +96,7 @@ namespace net.dnsclient
                             DnsDatagram dnsResponse;
                             string dnssecErrorMessage = null;
 
-                            if (server == "recursive-resolver")
+                            if (server.Equals("recursive-resolver", StringComparison.OrdinalIgnoreCase))
                             {
                                 DnsQuestionRecord question;
 
@@ -112,6 +112,27 @@ namespace net.dnsclient
                                 try
                                 {
                                     dnsResponse = await DnsClient.RecursiveResolveAsync(question, dnsCache, null, preferIpv6, udpPayloadSize, randomizeName, qnameMinimization, false, dnssecValidation, null, retries, timeout);
+                                }
+                                catch (DnsClientResponseDnssecValidationException ex)
+                                {
+                                    dnsResponse = ex.Response;
+                                    dnssecErrorMessage = ex.Message;
+                                }
+                            }
+                            else if (server.Equals("system-dns", StringComparison.OrdinalIgnoreCase))
+                            {
+                                DnsClient dnsClient = new DnsClient();
+
+                                dnsClient.PreferIPv6 = preferIpv6;
+                                dnsClient.RandomizeName = randomizeName;
+                                dnsClient.Retries = retries;
+                                dnsClient.Timeout = timeout;
+                                dnsClient.UdpPayloadSize = udpPayloadSize;
+                                dnsClient.DnssecValidation = dnssecValidation;
+
+                                try
+                                {
+                                    dnsResponse = await dnsClient.ResolveAsync(domain, type);
                                 }
                                 catch (DnsClientResponseDnssecValidationException ex)
                                 {
