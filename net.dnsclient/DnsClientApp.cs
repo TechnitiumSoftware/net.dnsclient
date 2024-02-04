@@ -1,6 +1,6 @@
 ﻿/*
 Technitium dnsclient.net
-Copyright (C) 2023  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2024  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,11 +35,15 @@ namespace net.dnsclient
 {
     public class DnsClientApp
     {
+        static readonly char[] domainTrimChars = new char[] { '\t', ' ', '.' };
+
         public IConfiguration Configuration { get; set; }
 
         public DnsClientApp(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            _ = DnsClient.UpdateRootServersAsync();
         }
 
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
@@ -84,7 +88,7 @@ namespace net.dnsclient
                             if (!string.IsNullOrEmpty(strDnssecValidation))
                                 dnssecValidation = bool.Parse(strDnssecValidation);
 
-                            domain = domain.Trim(new char[] { '\t', ' ', '.' });
+                            domain = domain.Trim(domainTrimChars);
 
                             bool preferIpv6 = Configuration.GetValue<bool>("PreferIpv6");
                             ushort udpPayloadSize = Configuration.GetValue<ushort>("UdpPayloadSize");
@@ -182,7 +186,7 @@ namespace net.dnsclient
                                 }
                             }
 
-                            using (MemoryStream mS = new MemoryStream())
+                            using (MemoryStream mS = new MemoryStream(4096))
                             {
                                 Utf8JsonWriter jsonWriter = new Utf8JsonWriter(mS);
                                 jsonWriter.WriteStartObject();
@@ -218,7 +222,7 @@ namespace net.dnsclient
                         }
                         catch (Exception ex)
                         {
-                            using (MemoryStream mS = new MemoryStream())
+                            using (MemoryStream mS = new MemoryStream(4096))
                             {
                                 Utf8JsonWriter jsonWriter = new Utf8JsonWriter(mS);
                                 jsonWriter.WriteStartObject();
@@ -246,7 +250,7 @@ namespace net.dnsclient
                         break;
 
                     case "/api/version":
-                        response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                        response.Headers.ContentType = "application/json; charset=utf-8";
                         await response.WriteAsync("{\"status\":\"ok\", \"response\": {\"version\": \"" + GetCleanVersion(Assembly.GetExecutingAssembly().GetName().Version) + "\"}}");
                         break;
                 }
