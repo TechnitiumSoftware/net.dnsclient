@@ -12,7 +12,7 @@ DNS Client is an ASP.NET Core web application hosted on https://dnsclient.net/. 
 - Open source cross-platform .NET implementation hosted on GitHub.
 
 # System Requirements
-- Requires [ASP.NET Core 7](https://dotnet.microsoft.com/download) installed.
+- Requires [ASP.NET Core 8](https://dotnet.microsoft.com/download) installed.
 - Windows, Linux and macOS supported.
 - Web app interface works with any modern web browser like Chrome, FireFox or Edge.
 
@@ -20,7 +20,7 @@ DNS Client is an ASP.NET Core web application hosted on https://dnsclient.net/. 
 - [DnsClientPortable.tar.gz](https://go.technitium.com/?id=26)
 
 # Usage Instructions
-- Install [ASP.NET Core 7](https://dotnet.microsoft.com/download) runtime.
+- Install [ASP.NET Core 8](https://dotnet.microsoft.com/download) runtime.
 - Extract the downloaded DNS Client tar archive.
 - Run start.bat on Windows or start.sh on Linux to start the web app.
 - Open http://localhost:8001/ in any web browser to use the web app.
