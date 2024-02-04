@@ -3,15 +3,15 @@
   <PropertyGroup>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <Authors>Shreyas Zare</Authors>
     <Company>Technitium</Company>
     <RepositoryUrl>https://github.com/TechnitiumSoftware/net.dnsclient</RepositoryUrl>
     <PackageProjectUrl>https://dnsclient.net/</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
-    <Copyright>Copyright (C) 2023  Shreyas Zare (shreyas@technitium.com)</Copyright>
-    <Version>5.3</Version>
+    <Copyright>Copyright (C) 2024  Shreyas Zare (shreyas@technitium.com)</Copyright>
+    <Version>6.0</Version>
     <PackageId>DnsClient.Net</PackageId>
     <Product>DnsClient.Net</Product>
     <AssemblyName>DnsClientApp</AssemblyName>
