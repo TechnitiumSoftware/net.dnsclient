@@ -1,6 +1,6 @@
 ﻿/*
 Technitium dnsclient.net
-Copyright (C) 2023  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2024  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@ $(function () {
         var type = $("#optType").val();
         var protocol = $("#optProtocol").val();
         var dnssecValidation = $("#chkDnssecValidation").prop("checked");
+        var ednsClientSubnet = $("#txtClientSubnet").val();
 
         {
             var i = server.indexOf("{");
@@ -98,15 +99,17 @@ $(function () {
             }
         }
 
-        window.location.hash = encodeURIComponent($("#txtServer").val()) + "/" + encodeURIComponent(domain) + "/" + type + "/" + protocol + "/" + dnssecValidation;
+        window.location.hash = encodeURIComponent($("#txtServer").val()) + "/" + encodeURIComponent(domain) + "/" + type + "/" + protocol + "/" + dnssecValidation + "/" + encodeURIComponent(ednsClientSubnet);
 
-        var apiUrl = "/api/dnsclient/?server=" + server + "&domain=" + domain + "&type=" + type + "&protocol=" + protocol + "&dnssec=" + dnssecValidation;
-        var divOutput = $("#divOutput");
+        var apiUrl = "/api/dnsclient/?server=" + encodeURIComponent(server) + "&domain=" + encodeURIComponent(domain) + "&type=" + type + "&protocol=" + protocol + "&dnssec=" + dnssecValidation + "&ednsClientSubnet=" + encodeURIComponent(ednsClientSubnet);
+
+        var divLoader = $("#divLoader");
+        var divOutputAccordion = $("#divOutputAccordion");
 
         //show loader
-        divOutput.html("<pre style=\"margin-top: 20px; margin-bottom: 0px;\"><img class='center-block' src='/img/loader.gif' /></pre>");
-        divOutput.show();
         hideAlert();
+        divOutputAccordion.hide();
+        divLoader.show();
 
         $.ajax({
             type: "GET",
@@ -114,33 +117,50 @@ $(function () {
             dataType: 'json',
             cache: false,
             success: function (responseJSON, status, jqXHR) {
+                divLoader.hide();
+                btn.button('reset');
 
                 switch (responseJSON.status) {
-                    case "ok":
-                        divOutput.html("<pre style=\"margin-top: 20px; margin-bottom: 0px;\">" + JSON.stringify(responseJSON.response, null, 2) + "</pre>");
-                        break;
-
                     case "warning":
                         showAlert("warning", "Warning!", responseJSON.warningMessage);
-                        divOutput.html("<pre style=\"margin-top: 20px; margin-bottom: 0px;\">" + JSON.stringify(responseJSON.response, null, 2) + "</pre>");
+
+                    case "ok":
+                        $("#preFinalResponse").text(JSON.stringify(responseJSON.response, null, 2));
+                        $("#divFinalResponseCollapse").collapse("show");
+                        $("#divRawResponsesCollapse").collapse("hide");
+                        divOutputAccordion.show();
                         break;
 
                     case "error":
                         showAlert("danger", "Error!", responseJSON.errorMessage + (responseJSON.innerErrorMessage == null ? "" : " " + responseJSON.innerErrorMessage));
-                        divOutput.hide();
                         break;
 
                     default:
                         showAlert("danger", "Error!", "Invalid status code was received.");
-                        divOutput.hide();
                         break;
                 }
 
-                btn.button('reset');
+                if ((responseJSON.rawResponses != null)) {
+                    if (responseJSON.rawResponses.length == 0) {
+                        $("#divRawResponsePanel").hide();
+                    }
+                    else {
+                        var rawListHtml = "";
+
+                        for (var i = 0; i < responseJSON.rawResponses.length; i++) {
+                            rawListHtml += "<li class=\"list-group-item\"><pre style=\"margin-top: 5px; margin-bottom: 5px;\">" + JSON.stringify(responseJSON.rawResponses[i], null, 2) + "</pre></li>";
+                        }
+
+                        $("#spanRawResponsesCount").text(responseJSON.rawResponses.length);
+                        $("#ulRawResponsesList").html(rawListHtml);
+                        $("#divRawResponsesCollapse").collapse("hide");
+                        $("#divRawResponsePanel").show();
+                    }
+                }
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 showAlert("danger", "Error!", jqXHR.status + " " + jqXHR.statusText);
-                divOutput.hide();
+                divLoader.hide();
                 btn.button('reset');
             }
         });
@@ -177,6 +197,11 @@ $(function () {
                 else
                     $("#chkDnssecValidation").prop("checked", false);
 
+                if (values.length >= 6)
+                    $("#txtClientSubnet").val(decodeURIComponent(values[5]));
+                else
+                    $("#txtClientSubnet").val("");
+
                 if ($("#txtServer").val() === "Recursive Query (recursive-resolver)")
                     $("#txtServer").val("Recursive Query {recursive-resolver}");
 
@@ -198,7 +223,7 @@ $(function () {
 });
 
 function showAlert(type, title, message) {
-    var alertHTML = "<div class=\"alert alert-" + type + "\" style=\"margin-top: 20px; margin-bottom: 0px;\" role=\"alert\">\
+    var alertHTML = "<div class=\"alert alert-" + type + "\" style=\"margin-top: 15px; margin-bottom: 0px;\" role=\"alert\">\
     <button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button>\
     <strong>" + title + "</strong>&nbsp;" + message + "\
     </div>";
