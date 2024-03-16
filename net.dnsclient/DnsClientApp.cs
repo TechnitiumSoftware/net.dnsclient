@@ -87,7 +87,7 @@ namespace net.dnsclient
                             DnsResourceRecordType type = Enum.Parse<DnsResourceRecordType>(request.Query["type"], true);
 
                             NetworkAddress eDnsClientSubnet = null;
-                            string strEDnsClientSubnet = request.Query["ednsClientSubnet"];
+                            string strEDnsClientSubnet = request.Query["eDnsClientSubnet"];
                             if (!string.IsNullOrEmpty(strEDnsClientSubnet))
                             {
                                 eDnsClientSubnet = NetworkAddress.Parse(strEDnsClientSubnet);

@@ -57,7 +57,7 @@ $(function () {
         var type = $("#optType").val();
         var protocol = $("#optProtocol").val();
         var dnssecValidation = $("#chkDnssecValidation").prop("checked");
-        var ednsClientSubnet = $("#txtClientSubnet").val();
+        var eDnsClientSubnet = $("#txtClientSubnet").val();
 
         {
             var i = server.indexOf("{");
@@ -99,9 +99,9 @@ $(function () {
             }
         }
 
-        window.location.hash = encodeURIComponent($("#txtServer").val()) + "/" + encodeURIComponent(domain) + "/" + type + "/" + protocol + "/" + dnssecValidation + "/" + encodeURIComponent(ednsClientSubnet);
+        window.location.hash = encodeURIComponent($("#txtServer").val()) + "/" + encodeURIComponent(domain) + "/" + type + "/" + protocol + "/" + dnssecValidation + "/" + encodeURIComponent(eDnsClientSubnet);
 
-        var apiUrl = "/api/dnsclient/?server=" + encodeURIComponent(server) + "&domain=" + encodeURIComponent(domain) + "&type=" + type + "&protocol=" + protocol + "&dnssec=" + dnssecValidation + "&ednsClientSubnet=" + encodeURIComponent(ednsClientSubnet);
+        var apiUrl = "/api/dnsclient/?server=" + encodeURIComponent(server) + "&domain=" + encodeURIComponent(domain) + "&type=" + type + "&protocol=" + protocol + "&dnssec=" + dnssecValidation + "&eDnsClientSubnet=" + encodeURIComponent(eDnsClientSubnet);
 
         var divLoader = $("#divLoader");
         var divOutputAccordion = $("#divOutputAccordion");
