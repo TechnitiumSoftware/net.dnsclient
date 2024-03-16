@@ -24,10 +24,13 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Text.Json;
+using TechnitiumLibrary.Net;
 using TechnitiumLibrary.Net.Dns;
 using TechnitiumLibrary.Net.Dns.ResourceRecords;
 
@@ -83,6 +86,27 @@ namespace net.dnsclient
                             string domain = request.Query["domain"];
                             DnsResourceRecordType type = Enum.Parse<DnsResourceRecordType>(request.Query["type"], true);
 
+                            NetworkAddress eDnsClientSubnet = null;
+                            string strEDnsClientSubnet = request.Query["ednsClientSubnet"];
+                            if (!string.IsNullOrEmpty(strEDnsClientSubnet))
+                            {
+                                eDnsClientSubnet = NetworkAddress.Parse(strEDnsClientSubnet);
+                                switch (eDnsClientSubnet.AddressFamily)
+                                {
+                                    case AddressFamily.InterNetwork:
+                                        if (eDnsClientSubnet.PrefixLength == 32)
+                                            eDnsClientSubnet = new NetworkAddress(eDnsClientSubnet.Address, 24);
+
+                                        break;
+
+                                    case AddressFamily.InterNetworkV6:
+                                        if (eDnsClientSubnet.PrefixLength == 128)
+                                            eDnsClientSubnet = new NetworkAddress(eDnsClientSubnet.Address, 56);
+
+                                        break;
+                                }
+                            }
+
                             bool dnssecValidation = false;
                             string strDnssecValidation = request.Query["dnssec"];
                             if (!string.IsNullOrEmpty(strDnssecValidation))
@@ -98,6 +122,7 @@ namespace net.dnsclient
                             int timeout = Configuration.GetValue<int>("Timeout");
 
                             DnsDatagram dnsResponse;
+                            List<DnsDatagram> rawResponses = new List<DnsDatagram>();
                             string dnssecErrorMessage = null;
 
                             if (server.Equals("recursive-resolver", StringComparison.OrdinalIgnoreCase))
@@ -115,7 +140,7 @@ namespace net.dnsclient
 
                                 try
                                 {
-                                    dnsResponse = await DnsClient.RecursiveResolveAsync(question, dnsCache, null, preferIpv6, udpPayloadSize, randomizeName, qnameMinimization, false, dnssecValidation, null, retries, timeout);
+                                    dnsResponse = await DnsClient.RecursiveResolveAsync(question, dnsCache, null, preferIpv6, udpPayloadSize, randomizeName, qnameMinimization, false, dnssecValidation, eDnsClientSubnet, retries, timeout, rawResponses: rawResponses);
                                 }
                                 catch (DnsClientResponseDnssecValidationException ex)
                                 {
@@ -133,6 +158,7 @@ namespace net.dnsclient
                                 dnsClient.Timeout = timeout;
                                 dnsClient.UdpPayloadSize = udpPayloadSize;
                                 dnsClient.DnssecValidation = dnssecValidation;
+                                dnsClient.EDnsClientSubnet = eDnsClientSubnet;
 
                                 try
                                 {
@@ -174,6 +200,7 @@ namespace net.dnsclient
                                 dnsClient.Timeout = timeout;
                                 dnsClient.UdpPayloadSize = udpPayloadSize;
                                 dnsClient.DnssecValidation = dnssecValidation;
+                                dnsClient.EDnsClientSubnet = eDnsClientSubnet;
 
                                 try
                                 {
@@ -194,18 +221,23 @@ namespace net.dnsclient
                                 if (dnssecErrorMessage is null)
                                 {
                                     jsonWriter.WriteString("status", "ok");
-
-                                    jsonWriter.WritePropertyName("response");
-                                    dnsResponse.SerializeTo(jsonWriter);
                                 }
                                 else
                                 {
                                     jsonWriter.WriteString("status", "warning");
                                     jsonWriter.WriteString("warningMessage", dnssecErrorMessage);
-
-                                    jsonWriter.WritePropertyName("response");
-                                    dnsResponse.SerializeTo(jsonWriter);
                                 }
+
+                                jsonWriter.WritePropertyName("response");
+                                dnsResponse.SerializeTo(jsonWriter);
+
+                                jsonWriter.WritePropertyName("rawResponses");
+                                jsonWriter.WriteStartArray();
+
+                                for (int i = 0; i < rawResponses.Count; i++)
+                                    rawResponses[i].SerializeTo(jsonWriter);
+
+                                jsonWriter.WriteEndArray();
 
                                 jsonWriter.WriteEndObject();
                                 jsonWriter.Flush();
