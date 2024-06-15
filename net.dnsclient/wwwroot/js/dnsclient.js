@@ -101,7 +101,7 @@ $(function () {
 
         window.location.hash = encodeURIComponent($("#txtServer").val()) + "/" + encodeURIComponent(domain) + "/" + type + "/" + protocol + "/" + dnssecValidation + "/" + encodeURIComponent(eDnsClientSubnet);
 
-        var apiUrl = "/api/dnsclient/?server=" + encodeURIComponent(server) + "&domain=" + encodeURIComponent(domain) + "&type=" + type + "&protocol=" + protocol + "&dnssec=" + dnssecValidation + "&eDnsClientSubnet=" + encodeURIComponent(eDnsClientSubnet);
+        var apiUrl = "api/dnsclient/?server=" + encodeURIComponent(server) + "&domain=" + encodeURIComponent(domain) + "&type=" + type + "&protocol=" + protocol + "&dnssec=" + dnssecValidation + "&eDnsClientSubnet=" + encodeURIComponent(eDnsClientSubnet);
 
         var divLoader = $("#divLoader");
         var divOutputAccordion = $("#divOutputAccordion");
@@ -213,7 +213,7 @@ $(function () {
     //load version
     $.ajax({
         type: "GET",
-        url: "/api/version",
+        url: "api/version",
         dataType: 'json',
         cache: false,
         success: function (responseJSON, status, jqXHR) {
