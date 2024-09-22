@@ -30,6 +30,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text.Json;
+using System.Threading;
 using TechnitiumLibrary.Net;
 using TechnitiumLibrary.Net.Dns;
 using TechnitiumLibrary.Net.Dns.ResourceRecords;
@@ -45,8 +46,6 @@ namespace net.dnsclient
         public DnsClientApp(IConfiguration configuration)
         {
             Configuration = configuration;
-
-            _ = DnsClient.UpdateRootServersAsync();
         }
 
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
@@ -140,7 +139,10 @@ namespace net.dnsclient
 
                                 try
                                 {
-                                    dnsResponse = await DnsClient.RecursiveResolveAsync(question, dnsCache, null, preferIpv6, udpPayloadSize, randomizeName, qnameMinimization, false, dnssecValidation, eDnsClientSubnet, retries, timeout, rawResponses: rawResponses);
+                                    dnsResponse = await TechnitiumLibrary.TaskExtensions.TimeoutAsync(async delegate (CancellationToken cancellationToken1)
+                                    {
+                                        return await DnsClient.RecursiveResolveAsync(question, dnsCache, null, preferIpv6, udpPayloadSize, randomizeName, qnameMinimization, dnssecValidation, eDnsClientSubnet, retries, timeout, rawResponses: rawResponses, cancellationToken: cancellationToken1);
+                                    }, 60000);
                                 }
                                 catch (DnsClientResponseDnssecValidationException ex)
                                 {
