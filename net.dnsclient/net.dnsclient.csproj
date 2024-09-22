@@ -11,7 +11,7 @@
     <PackageProjectUrl>https://dnsclient.net/</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <Copyright>Copyright (C) 2024  Shreyas Zare (shreyas@technitium.com)</Copyright>
-    <Version>7.1</Version>
+    <Version>8.0</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <PackageId>DnsClient.Net</PackageId>
     <Product>DnsClient.Net</Product>
@@ -38,6 +38,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="TechnitiumLibrary">
+      <HintPath>..\..\TechnitiumLibrary\bin\TechnitiumLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="TechnitiumLibrary.Net">
       <HintPath>..\..\TechnitiumLibrary\bin\TechnitiumLibrary.Net.dll</HintPath>
     </Reference>
