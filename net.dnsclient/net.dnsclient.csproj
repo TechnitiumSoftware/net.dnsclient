@@ -10,8 +10,8 @@
     <RepositoryUrl>https://github.com/TechnitiumSoftware/net.dnsclient</RepositoryUrl>
     <PackageProjectUrl>https://dnsclient.net/</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
-    <Copyright>Copyright (C) 2024  Shreyas Zare (shreyas@technitium.com)</Copyright>
-    <Version>8.1.6</Version>
+    <Copyright>Copyright (C) 2025  Shreyas Zare (shreyas@technitium.com)</Copyright>
+    <Version>8.1.7</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <PackageId>DnsClient.Net</PackageId>
     <Product>DnsClient.Net</Product>
