@@ -11,7 +11,7 @@
     <PackageProjectUrl>https://dnsclient.net/</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <Copyright>Copyright (C) 2025  Shreyas Zare (shreyas@technitium.com)</Copyright>
-    <Version>8.2.1</Version>
+    <Version>8.3</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <PackageId>DnsClient.Net</PackageId>
     <Product>DnsClient.Net</Product>
@@ -35,6 +35,10 @@
     <Content Include="systemd.service">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.5.1" />
   </ItemGroup>
 
   <ItemGroup>
