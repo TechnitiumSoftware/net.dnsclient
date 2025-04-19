@@ -296,6 +296,11 @@ namespace net.dnsclient
                         response.Headers.ContentType = "application/json; charset=utf-8";
                         await response.WriteAsync("{\"status\":\"ok\", \"response\": {\"version\": \"" + GetCleanVersion(Assembly.GetExecutingAssembly().GetName().Version) + "\"}}");
                         break;
+
+                    default:
+                        response.StatusCode = (int)HttpStatusCode.NotFound;
+                        response.ContentLength = 0;
+                        break;
                 }
             });
         }
