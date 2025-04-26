@@ -97,6 +97,7 @@ fi
 echo ""
 echo "Technitium DNS Client was installed successfully!"
 echo "Open http://$(cat /proc/sys/kernel/hostname):8001/ to access the DNS Client web service."
+echo ""
 echo "Note! Edit the '/etc/systemd/system/dnsclient.service' service config file to change the DNS Client web server port."
 echo ""
 echo "Donate! Make a contribution by becoming a Patron: https://www.patreon.com/technitium"
