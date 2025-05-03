@@ -39,7 +39,10 @@ Pull the official image from [Docker Hub](https://hub.docker.com/r/technitium/dn
 - Extract the downloaded DNS Client tar archive.
 - Run start.bat on Windows or start.sh on Linux to start the web app.
 - Open http://localhost:8001/ in any web browser to use the web app.
-- Edit the *appsettings.json* file for changing advanced options like enabling IPv6 preference.
+- Edit the `appsettings.json` file for changing advanced options like enabling IPv6 preference.
+
+# Configuring HTTPS
+To enable HTTPS or setting specific end points, configure the `appsettings.json` file as described in the [documentation](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/endpoints?view=aspnetcore-9.0#configure-https-in-appsettingsjson).
 
 # Support
 For support, send an email to support@technitium.com. For any issues, feedback, or feature request, create an issue on [GitHub](https://github.com/TechnitiumSoftware/net.dnsclient/issues).
