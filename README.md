@@ -29,13 +29,13 @@ Pull the official image from [Docker Hub](https://hub.docker.com/r/technitium/dn
 # Manual Installation
 
 ## System Requirements
-- Requires [ASP.NET Core 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) installed.
+- Requires [ASP.NET Core 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) installed.
 
 ## Download
 - [DnsClientPortable.tar.gz](https://go.technitium.com/?id=26)
 
 ## Manual Install Instructions
-- Install [ASP.NET Core 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) runtime.
+- Install [ASP.NET Core 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) runtime.
 - Extract the downloaded DNS Client tar archive.
 - Run start.bat on Windows or start.sh on Linux to start the web app.
 - Open http://localhost:8001/ in any web browser to use the web app.
