@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
 		<Authors>Shreyas Zare</Authors>
 		<Company>Technitium</Company>
@@ -11,12 +11,13 @@
 		<PackageProjectUrl>https://dnsclient.net/</PackageProjectUrl>
 		<PackageLicenseUrl></PackageLicenseUrl>
 		<Copyright>Copyright (C) 2025  Shreyas Zare (shreyas@technitium.com)</Copyright>
-		<Version>8.4</Version>
+		<Version>9.0</Version>
 		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 		<PackageId>DnsClient.Net</PackageId>
 		<Product>DnsClient.Net</Product>
 		<AssemblyName>DnsClientApp</AssemblyName>
 		<UserSecretsId>7030d121-871d-4d7e-a6b9-8178a1fa2869</UserSecretsId>
+		<CompressionEnabled>false</CompressionEnabled>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -24,7 +25,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="BouncyCastle.Cryptography" Version="2.5.1" />
+		<PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
 	</ItemGroup>
 
 	<ItemGroup>
