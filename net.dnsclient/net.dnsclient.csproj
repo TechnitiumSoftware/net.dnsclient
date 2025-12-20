@@ -11,7 +11,7 @@
 		<PackageProjectUrl>https://dnsclient.net/</PackageProjectUrl>
 		<PackageLicenseUrl></PackageLicenseUrl>
 		<Copyright>Copyright (C) 2025  Shreyas Zare (shreyas@technitium.com)</Copyright>
-		<Version>9.0</Version>
+		<Version>9.1</Version>
 		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 		<PackageId>DnsClient.Net</PackageId>
 		<Product>DnsClient.Net</Product>
