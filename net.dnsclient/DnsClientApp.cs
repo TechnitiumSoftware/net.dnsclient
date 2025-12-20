@@ -184,7 +184,7 @@ namespace net.dnsclient
                                 NameServerAddress nameServer = NameServerAddress.Parse(server);
 
                                 if (nameServer.Protocol != protocol)
-                                    nameServer = nameServer.ChangeProtocol(protocol);
+                                    nameServer = nameServer.Clone(protocol);
 
                                 if (nameServer.IsIPEndPointStale)
                                 {
