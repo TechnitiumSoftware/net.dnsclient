@@ -2,7 +2,7 @@ services:
   dns-client:
     container_name: dns-client
     hostname: dns-client
-    image: technitium/dns-client:latest
+    image: docker.io/technitium/dns-client:latest
     ports:
       - "8001:8001/tcp" #DNS Client web app
     restart: unless-stopped
