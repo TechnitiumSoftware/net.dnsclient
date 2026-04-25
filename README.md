@@ -20,6 +20,11 @@ Run the above command in Terminal or using SSH to install or update the DNS Clie
 
 Note! Raspberry Pi with an arm7 CPU is supported and thus both Raspberry Pi 1 and Raspberry Pi Zero which have arm6 CPU are not supported.
 
+To uninstall the DNS Client, run the uninstall script as shown below:
+```
+curl -sSL https://download.technitium.com/dnsclient/uninstall.sh | sudo bash
+```
+
 # Docker
 ```
 docker pull technitium/dns-client:latest
@@ -29,20 +34,20 @@ Pull the official image from [Docker Hub](https://hub.docker.com/r/technitium/dn
 # Manual Installation
 
 ## System Requirements
-- Requires [ASP.NET Core 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) installed.
+- Requires [ASP.NET Core 10](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) installed.
 
 ## Download
 - [DnsClientPortable.tar.gz](https://go.technitium.com/?id=26)
 
 ## Manual Install Instructions
-- Install [ASP.NET Core 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) runtime.
+- Install [ASP.NET Core 10](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) runtime.
 - Extract the downloaded DNS Client tar archive.
 - Run start.bat on Windows or start.sh on Linux to start the web app.
 - Open http://localhost:8001/ in any web browser to use the web app.
 - Edit the `appsettings.json` file for changing advanced options like enabling IPv6 preference.
 
 # Configuring HTTPS
-To enable HTTPS or setting specific end points, configure the `appsettings.json` file as described in the [documentation](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/endpoints?view=aspnetcore-9.0#configure-https-in-appsettingsjson).
+To enable HTTPS or setting specific end points, configure the `appsettings.json` file as described in the [documentation](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/endpoints?view=aspnetcore-10.0#configure-https-in-appsettingsjson).
 
 # Support
 For support, send an email to support@technitium.com. For any issues, feedback, or feature request, create an issue on [GitHub](https://github.com/TechnitiumSoftware/net.dnsclient/issues).
