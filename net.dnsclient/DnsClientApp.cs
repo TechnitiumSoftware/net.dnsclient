@@ -1,6 +1,6 @@
 ﻿/*
 Technitium dnsclient.net
-Copyright (C) 2025  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2026  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading;
@@ -71,6 +70,25 @@ namespace net.dnsclient
                 }
             });
 
+            IPv6Mode ipv6Mode;
+
+            string strIPv6Mode = Configuration.GetValue<string>("IPv6Mode", null);
+            if (!string.IsNullOrEmpty(strIPv6Mode))
+            {
+                ipv6Mode = Enum.Parse<IPv6Mode>(strIPv6Mode, true);
+            }
+            else
+            {
+                bool preferIpv6 = Configuration.GetValue("PreferIpv6", false);
+                ipv6Mode = preferIpv6 ? IPv6Mode.Preferred : IPv6Mode.Disabled;
+            }
+
+            ushort udpPayloadSize = Configuration.GetValue<ushort>("UdpPayloadSize");
+            bool randomizeName = false;
+            bool qnameMinimization = false;
+            int retries = Configuration.GetValue<int>("Retries");
+            int timeout = Configuration.GetValue<int>("Timeout");
+
             app.Run(async (context) =>
             {
                 HttpRequest request = context.Request;
@@ -82,43 +100,30 @@ namespace net.dnsclient
                         try
                         {
                             string server = request.Query["server"];
+                            if (string.IsNullOrEmpty(server))
+                                throw new ArgumentException("Parameter 'server' missing.");
+
                             string domain = request.Query["domain"];
-                            DnsResourceRecordType type = Enum.Parse<DnsResourceRecordType>(request.Query["type"], true);
+                            if (string.IsNullOrEmpty(domain))
+                                throw new ArgumentException("Parameter 'domain' missing.");
+
+                            domain = domain.Trim(domainTrimChars);
+
+                            string strType = request.Query["type"];
+                            if (string.IsNullOrEmpty(strType))
+                                throw new ArgumentException("Parameter 'type' missing.");
+
+                            DnsResourceRecordType type = Enum.Parse<DnsResourceRecordType>(strType, true);
 
                             NetworkAddress eDnsClientSubnet = null;
                             string strEDnsClientSubnet = request.Query["eDnsClientSubnet"];
                             if (!string.IsNullOrEmpty(strEDnsClientSubnet))
-                            {
                                 eDnsClientSubnet = NetworkAddress.Parse(strEDnsClientSubnet);
-                                switch (eDnsClientSubnet.AddressFamily)
-                                {
-                                    case AddressFamily.InterNetwork:
-                                        if (eDnsClientSubnet.PrefixLength == 32)
-                                            eDnsClientSubnet = new NetworkAddress(eDnsClientSubnet.Address, 24);
-
-                                        break;
-
-                                    case AddressFamily.InterNetworkV6:
-                                        if (eDnsClientSubnet.PrefixLength == 128)
-                                            eDnsClientSubnet = new NetworkAddress(eDnsClientSubnet.Address, 56);
-
-                                        break;
-                                }
-                            }
 
                             bool dnssecValidation = false;
                             string strDnssecValidation = request.Query["dnssec"];
                             if (!string.IsNullOrEmpty(strDnssecValidation))
                                 dnssecValidation = bool.Parse(strDnssecValidation);
-
-                            domain = domain.Trim(domainTrimChars);
-
-                            bool preferIpv6 = Configuration.GetValue<bool>("PreferIpv6");
-                            ushort udpPayloadSize = Configuration.GetValue<ushort>("UdpPayloadSize");
-                            bool randomizeName = false;
-                            bool qnameMinimization = false;
-                            int retries = Configuration.GetValue<int>("Retries");
-                            int timeout = Configuration.GetValue<int>("Timeout");
 
                             DnsDatagram dnsResponse;
                             List<DnsDatagram> rawResponses = new List<DnsDatagram>();
@@ -141,7 +146,7 @@ namespace net.dnsclient
                                 {
                                     dnsResponse = await TechnitiumLibrary.TaskExtensions.TimeoutAsync(async delegate (CancellationToken cancellationToken1)
                                     {
-                                        return await DnsClient.RecursiveResolveAsync(question, dnsCache, null, preferIpv6, udpPayloadSize, randomizeName, qnameMinimization, dnssecValidation, eDnsClientSubnet, retries, timeout, rawResponses: rawResponses, cancellationToken: cancellationToken1);
+                                        return await DnsClient.RecursiveResolveAsync(question, dnsCache, null, ipv6Mode, udpPayloadSize, randomizeName, qnameMinimization, dnssecValidation, eDnsClientSubnet, retries, timeout, rawResponses: rawResponses, cancellationToken: cancellationToken1);
                                     }, 60000);
                                 }
                                 catch (DnsClientResponseDnssecValidationException ex)
@@ -157,7 +162,7 @@ namespace net.dnsclient
                             {
                                 DnsClient dnsClient = new DnsClient();
 
-                                dnsClient.PreferIPv6 = preferIpv6;
+                                dnsClient.IPv6Mode = ipv6Mode;
                                 dnsClient.RandomizeName = randomizeName;
                                 dnsClient.Retries = retries;
                                 dnsClient.Timeout = timeout;
@@ -180,7 +185,11 @@ namespace net.dnsclient
                             }
                             else
                             {
-                                DnsTransportProtocol protocol = Enum.Parse<DnsTransportProtocol>(request.Query["protocol"], true);
+                                string strProtocol = request.Query["protocol"];
+                                if (string.IsNullOrEmpty(strProtocol))
+                                    throw new ArgumentException("Parameter 'protocol' missing.");
+
+                                DnsTransportProtocol protocol = Enum.Parse<DnsTransportProtocol>(strProtocol, true);
                                 NameServerAddress nameServer = NameServerAddress.Parse(server);
 
                                 if (nameServer.Protocol != protocol)
@@ -188,13 +197,13 @@ namespace net.dnsclient
 
                                 if (nameServer.IsIPEndPointStale)
                                 {
-                                    await nameServer.ResolveIPAddressAsync(new DnsClient() { PreferIPv6 = preferIpv6, RandomizeName = randomizeName, Retries = retries, Timeout = timeout }, preferIpv6);
+                                    await nameServer.ResolveIPAddressAsync(new DnsClient() { IPv6Mode = ipv6Mode, RandomizeName = randomizeName, Retries = retries, Timeout = timeout }, ipv6Mode);
                                 }
                                 else if ((nameServer.DomainEndPoint is null) && ((protocol == DnsTransportProtocol.Udp) || (protocol == DnsTransportProtocol.Tcp)))
                                 {
                                     try
                                     {
-                                        await nameServer.ResolveDomainNameAsync(new DnsClient() { PreferIPv6 = preferIpv6, RandomizeName = randomizeName, Retries = retries, Timeout = timeout });
+                                        await nameServer.ResolveDomainNameAsync(new DnsClient() { IPv6Mode = ipv6Mode, RandomizeName = randomizeName, Retries = retries, Timeout = timeout });
                                     }
                                     catch
                                     { }
@@ -202,7 +211,7 @@ namespace net.dnsclient
 
                                 DnsClient dnsClient = new DnsClient(nameServer);
 
-                                dnsClient.PreferIPv6 = preferIpv6;
+                                dnsClient.IPv6Mode = ipv6Mode;
                                 dnsClient.RandomizeName = randomizeName;
                                 dnsClient.Retries = retries;
                                 dnsClient.Timeout = timeout;
