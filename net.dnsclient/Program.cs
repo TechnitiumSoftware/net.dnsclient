@@ -1,6 +1,6 @@
 ﻿/*
 Technitium dnsclient.net
-Copyright (C) 2021  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2026  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,27 +17,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace net.dnsclient
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
-        }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) =>
+            IHost host = Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    config.SetBasePath(Directory.GetCurrentDirectory());
-                    config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                    webBuilder.ConfigureAppConfiguration((hostingContext, config) =>
+                    {
+                        config.SetBasePath(Directory.GetCurrentDirectory());
+                        config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                    });
+                    webBuilder.UseStartup<DnsClientApp>();
                 })
-                .UseStartup<DnsClientApp>();
+                .Build();
+
+            await host.RunAsync();
+        }
     }
 }
