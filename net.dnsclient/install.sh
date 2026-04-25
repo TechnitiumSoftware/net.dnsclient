@@ -1,14 +1,15 @@
 #!/bin/sh
 
 dotnetDir="/opt/dotnet"
-dotnetVersion="9.0"
-dotnetRuntime="Microsoft.AspNetCore.App 9.0."
+dotnetVersion="10.0"
+dotnetRuntime="Microsoft.AspNetCore.App 10.0."
 dotnetUrl="https://dot.net/v1/dotnet-install.sh"
 
 dnsClientDir="/opt/technitium/dnsclient"
 dnsClientTar="$dnsClientDir/DnsClientPortable.tar.gz"
 dnsClientUrl="https://download.technitium.com/dnsclient/DnsClientPortable.tar.gz"
 
+serviceUser="dns-client"
 installLog="$dnsClientDir/install.log"
 
 echo ""
@@ -71,7 +72,12 @@ then
     exit 1
 fi
 
-echo "Installing Technitium DNS Client..."
+if [ -f "/etc/systemd/system/dnsclient.service" ]
+then
+    echo "Updating Technitium DNS Client..."
+else
+    echo "Installing Technitium DNS Client..."
+fi
 
 tar -zxf $dnsClientTar -C $dnsClientDir >> $installLog 2>&1
 
@@ -88,6 +94,9 @@ then
     echo "Restarting systemd service..."
     systemctl restart dnsclient.service >> $installLog 2>&1
 else
+    echo "Configuring user and permissions..."
+    useradd --system -M --shell /usr/sbin/nologin $serviceUser >> $installLog 2>&1
+
     echo "Configuring systemd service..."
     cp $dnsClientDir/systemd.service /etc/systemd/system/dnsclient.service
     systemctl enable dnsclient.service >> $installLog 2>&1    
