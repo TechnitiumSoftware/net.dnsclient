@@ -1,17 +1,39 @@
 [Unit]
 Description=Technitium DNS Client
+After=network.target
+Wants=network-online.target
 
 [Service]
+Type=simple
+User=dns-client
+Group=dns-client
+SyslogIdentifier=dns-client
+
 WorkingDirectory=/opt/technitium/dnsclient
+
+Environment="OPENSSL_ENABLE_SHA1_SIGNATURES=1"
+
 ExecStart=/usr/bin/dotnet /opt/technitium/dnsclient/DnsClientApp.dll --urls "http://[::]:8001/"
+
+# Restart service after 10 seconds if the dns client service crashes:
 Restart=always
-# Restart service after 10 seconds if the dotnet service crashes:
 RestartSec=10
-KillSignal=SIGINT
-SyslogIdentifier=dotnet-dnsclient
-User=www-data
-Environment=ASPNETCORE_ENVIRONMENT=Production
-Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+
+LockPersonality=true
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectClock=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectHostname=true
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=strict
+RemoveIPC=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
 
 [Install]
 WantedBy=multi-user.target
