@@ -10,7 +10,7 @@
 		<RepositoryUrl>https://github.com/TechnitiumSoftware/net.dnsclient</RepositoryUrl>
 		<PackageProjectUrl>https://dnsclient.net/</PackageProjectUrl>
 		<PackageLicenseUrl></PackageLicenseUrl>
-		<Version>10.0</Version>
+		<Version>10.1</Version>
 		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 		<PackageId>DnsClient.Net</PackageId>
 		<Product>DnsClient.Net</Product>
