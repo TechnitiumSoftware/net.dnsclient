@@ -19,6 +19,7 @@ echo "==============================="
 echo ""
 
 mkdir -p $dnsClientDir
+
 echo "" > $installLog
 
 if dotnet --list-runtimes 2> /dev/null | grep -q "$dotnetRuntime"; 
@@ -42,6 +43,13 @@ else
     fi
 
     curl -sSL $dotnetUrl | bash /dev/stdin -c $dotnetVersion --runtime aspnetcore --no-path --install-dir $dotnetDir --verbose >> $installLog 2>&1
+    
+    # On Alpine Linux dotnet requires libstdc++
+    if command -v apk >/dev/null 2>&1
+    then
+        echo "Installing ASP.NET Core Runtime dependencies..."
+        apk add --no-cache libstdc++ >> $installLog 2>&1
+    fi
 
     if [ ! -f "/usr/bin/dotnet" ]
     then
@@ -72,7 +80,7 @@ then
     exit 1
 fi
 
-if [ -f "/etc/systemd/system/dnsclient.service" ]
+if [ -f "/etc/systemd/system/dnsclient.service" ] || [ -f "/etc/init.d/dnsclient" ]
 then
     echo "Updating Technitium DNS Client..."
 else
@@ -83,31 +91,65 @@ tar -zxf $dnsClientTar -C $dnsClientDir >> $installLog 2>&1
 
 echo ""
 
-if ! [ "$(ps --no-headers -o comm 1 | tr -d '\n')" = "systemd" ] 
+if [ "$(ps --no-headers -o comm 1 | tr -d '\n')" = "systemd" ] 
 then
-    echo "Failed to install Technitium DNS Client: systemd was not detected."
-    exit 1
-fi
+    if [ -f "/etc/systemd/system/dnsclient.service" ]
+    then
+        echo "Configuring permissions..."
+        chown -R $serviceUser:$serviceUser $dnsClientDir >> $installLog 2>&1
 
-if [ -f "/etc/systemd/system/dnsclient.service" ]
+        echo "Restarting systemd service..."
+        systemctl restart dnsclient.service >> $installLog 2>&1
+    else
+        echo "Configuring user and permissions..."
+        useradd --system -M --shell /usr/sbin/nologin --user-group $serviceUser >> $installLog 2>&1
+        chown -R $serviceUser:$serviceUser $dnsClientDir >> $installLog 2>&1
+
+        echo "Configuring systemd service..."
+        cp $dnsClientDir/systemd.service /etc/systemd/system/dnsclient.service
+        systemctl enable dnsclient.service >> $installLog 2>&1    
+        systemctl start dnsclient.service >> $installLog 2>&1
+    fi
+elif [ -x "/sbin/rc-service" ]
 then
-    echo "Restarting systemd service..."
-    systemctl restart dnsclient.service >> $installLog 2>&1
+    if [ -f "/etc/init.d/dnsclient" ]
+    then
+        echo "Configuring permissions..."
+        chown -R $serviceUser:$serviceUser $dnsClientDir >> $installLog 2>&1
+
+        echo "Restarting OpenRC service..."
+        rc-service dnsclient stop >> $installLog 2>&1
+        rc-service dnsclient start >> $installLog 2>&1
+    else
+        echo "Configuring user and permissions..."
+        addgroup -S $serviceUser >> $installLog 2>&1
+        adduser -H -S -D -s /bin/false -G $serviceUser $serviceUser >> $installLog 2>&1
+        chown -R $serviceUser:$serviceUser $dnsClientDir >> $installLog 2>&1
+
+        echo "Configuring OpenRC service..."
+        cp $dnsClientDir/openrc.service /etc/init.d/dnsclient
+        chmod +x /etc/init.d/dnsclient
+        rc-update add dnsclient >> $installLog 2>&1
+        rc-service dnsclient start >> $installLog 2>&1
+    fi
 else
-    echo "Configuring user and permissions..."
-    useradd --system -M --shell /usr/sbin/nologin $serviceUser >> $installLog 2>&1
-
-    echo "Configuring systemd service..."
-    cp $dnsClientDir/systemd.service /etc/systemd/system/dnsclient.service
-    systemctl enable dnsclient.service >> $installLog 2>&1    
-    systemctl start dnsclient.service >> $installLog 2>&1
-fi
+    echo "Failed to install Technitium DNS Client: systemd/openrc was not detected."
+    exit 1
+fi 2>/dev/null
 
 echo ""
 echo "Technitium DNS Client was installed successfully!"
 echo "Open http://$(cat /proc/sys/kernel/hostname):8001/ to access the DNS Client web service."
 echo ""
-echo "Note! Edit the '/etc/systemd/system/dnsclient.service' service config file to change the DNS Client web server port."
+
+if [ -f "/etc/systemd/system/dnsclient.service" ]
+then
+    echo "Note! Edit the '/etc/systemd/system/dnsclient.service' service config file to change the DNS Client web server port."
+elif [ -f "/etc/init.d/dnsclient" ]
+then
+    echo "Note! Edit the '/etc/init.d/dnsclient' service config file to change the DNS Client web server port."
+fi
+
 echo ""
 echo "Donate! Make a contribution by becoming a Patron: https://www.patreon.com/technitium"
 echo ""
