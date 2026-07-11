@@ -1,0 +1,19 @@
+#!/sbin/openrc-run
+
+description="Technitium DNS Client"
+
+directory=/opt/technitium/dnsclient
+
+command="/usr/bin/dotnet"
+command_args="/opt/technitium/dnsclient/DnsClientApp.dll --urls \"http://[::]:8001/\""
+command_user=dns-client:dns-client
+
+capabilities="^cap_net_bind_service"
+
+supervisor="supervise-daemon"
+respawn_delay=10
+respawn_max=0
+
+depend() {
+    need net
+}
