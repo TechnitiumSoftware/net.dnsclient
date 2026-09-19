@@ -24,6 +24,7 @@ EXPOSE 8001/tcp
 # https://specs.opencontainers.org/image-spec/annotations/
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md
 LABEL org.opencontainers.image.title="Technitium DNS Client"
+LABEL org.opencontainers.image.version=10.3.0
 LABEL org.opencontainers.image.vendor="Technitium"
 LABEL org.opencontainers.image.source="https://github.com/TechnitiumSoftware/net.dnsclient"
 LABEL org.opencontainers.image.url="https://dnsclient.net/"
