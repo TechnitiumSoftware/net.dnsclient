@@ -98,14 +98,14 @@ then
         echo "Configuring permissions..."
         chown -R $serviceUser:$serviceUser $dnsClientDir >> $installLog 2>&1
 
-        echo "Restarting systemd service..."
+        echo "Restarting systemd 'dnsclient' service..."
         systemctl restart dnsclient.service >> $installLog 2>&1
     else
         echo "Configuring user and permissions..."
         useradd --system -M --shell /usr/sbin/nologin --user-group $serviceUser >> $installLog 2>&1
         chown -R $serviceUser:$serviceUser $dnsClientDir >> $installLog 2>&1
 
-        echo "Configuring systemd service..."
+        echo "Configuring systemd 'dnsclient' service..."
         cp $dnsClientDir/systemd.service /etc/systemd/system/dnsclient.service
         systemctl enable dnsclient.service >> $installLog 2>&1    
         systemctl start dnsclient.service >> $installLog 2>&1
@@ -117,7 +117,7 @@ then
         echo "Configuring permissions..."
         chown -R $serviceUser:$serviceUser $dnsClientDir >> $installLog 2>&1
 
-        echo "Restarting OpenRC service..."
+        echo "Restarting OpenRC 'dnsclient' service..."
         rc-service dnsclient stop >> $installLog 2>&1
         rc-service dnsclient start >> $installLog 2>&1
     else
@@ -126,7 +126,7 @@ then
         adduser -H -S -D -s /bin/false -G $serviceUser $serviceUser >> $installLog 2>&1
         chown -R $serviceUser:$serviceUser $dnsClientDir >> $installLog 2>&1
 
-        echo "Configuring OpenRC service..."
+        echo "Configuring OpenRC 'dnsclient' service..."
         cp $dnsClientDir/openrc.service /etc/init.d/dnsclient
         chmod +x /etc/init.d/dnsclient
         rc-update add dnsclient >> $installLog 2>&1
