@@ -1,6 +1,6 @@
 ﻿/*
 Technitium dnsclient.net
-Copyright (C) 2025  Shreyas Zare (shreyas@technitium.com)
+Copyright (C) 2026  Shreyas Zare (shreyas@technitium.com)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -249,7 +249,7 @@ function resolveDomain() {
                     var rawListHtml = "";
 
                     for (var i = 0; i < responseJSON.rawResponses.length; i++) {
-                        rawListHtml += "<li class=\"list-group-item\"><pre style=\"margin-top: 5px; margin-bottom: 5px;\">" + JSON.stringify(responseJSON.rawResponses[i], null, 2) + "</pre></li>";
+                        rawListHtml += "<li class=\"list-group-item\"><pre style=\"margin-top: 5px; margin-bottom: 5px;\">" + htmlEncode( JSON.stringify(responseJSON.rawResponses[i], null, 2)) + "</pre></li>";
                     }
 
                     $("#spanRawResponsesCount").text(responseJSON.rawResponses.length);
